@@ -49,6 +49,33 @@ def calculate_orthometric_height(model, latitude, longitude, h):
 
     }
 
+def dm_to_decimal(degree, minutes):
+
+    if minutes < 0 or minutes >= 60:
+        raise ValueError("Minutes must be between 0 and 59.9999.")
+
+    if degree < 0:
+        decimal = -(abs(degree) + minutes / 60)
+    else:
+        decimal = degree + minutes / 60
+
+    return decimal
+
+def dms_to_decimal(degree, minutes, seconds):
+
+    if seconds < 0 or seconds >= 60:
+        raise ValueError("Seconds must be between 0 and 59.9999.")
+
+    if minutes < 0 or minutes >= 60:
+        raise ValueError("Minutes must be between 0 and 59.9999.")
+
+    if degree < 0:
+        decimal = -(abs(degree) + minutes / 60 + seconds / 3600)
+    else:
+        decimal = degree + minutes / 60 + seconds / 3600
+
+    return decimal
+
     
 
 
