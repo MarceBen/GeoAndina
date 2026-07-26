@@ -25,34 +25,12 @@ def calculate_orthometric_height(model, latitude, longitude, h):
 
     orthometric_height = h - N
 
-    return {
-        "Latitude": latitude,
-        "Longitude": longitude,
-        "Ellipsoidal Height": h,
-
-        "Index_i": i,
-        "Index_j": j,
-        "Truncated_index_i": i_trunc,
-        "Truncated_index_j": j_trunc,
-
-        "NA": NA,
-        "NB": NB,
-        "NC": NC,
-        "ND": ND,
-
-        "t": t,
-        "u": u,
-
-        "Geoid_undulation": N,
-        "Orthometric_height": orthometric_height
-
-
-    }
+    return {"Orthometric_height": orthometric_height}
 
 def dm_to_decimal(degree, minutes):
 
     if minutes < 0 or minutes >= 60:
-        raise ValueError("Minutes must be between 0 and 59.9999.")
+        raise ValueError("Los minutos deben estar entre 0 y 59.9999.")
 
     if degree < 0:
         decimal = -(abs(degree) + minutes / 60)
@@ -64,10 +42,10 @@ def dm_to_decimal(degree, minutes):
 def dms_to_decimal(degree, minutes, seconds):
 
     if seconds < 0 or seconds >= 60:
-        raise ValueError("Seconds must be between 0 and 59.9999.")
+        raise ValueError("los segundos deben estar entre 0 y 59.9999.")
 
     if minutes < 0 or minutes >= 60:
-        raise ValueError("Minutes must be between 0 and 59.9999.")
+        raise ValueError("los minutos deben estar entre 0 y 59.9999.")
 
     if degree < 0:
         decimal = -(abs(degree) + minutes / 60 + seconds / 3600)
@@ -75,6 +53,30 @@ def dms_to_decimal(degree, minutes, seconds):
         decimal = degree + minutes / 60 + seconds / 3600
 
     return decimal
+
+def calculate_ellipsoidal_height(model, latitude, longitude, h):
+    
+    if(latitude < MIN_LATITUDE or latitude > MAX_LATITUDE):
+        raise ValueError("La latitud esta fuera de los limites del modelo ")
+    
+    if(longitude < MIN_LONGITUDE or longitude > MAX_LONGITUDE):
+        raise ValueError("La longitud esta fuera de los limites del modelo ")
+    
+    i, j, i_trunc, j_trunc = model.calculate_indices(latitude, longitude)
+
+    NA, NB, NC, ND = model.get_vertices(i_trunc, j_trunc)\
+
+    t, u = model.calculate_tu(latitude, longitude, NA, NB, ND)
+
+    N = bilinear_interpolation(NA, NB, NC, ND, t, u)
+
+    ellipsoidal_height = h + N
+
+    return {"ellipsoidal_height": ellipsoidal_height}
+
+
+
+
 
     
 
