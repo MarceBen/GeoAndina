@@ -14,6 +14,7 @@ model.load_model()
 
 
 @app.route("/", methods=["GET", "POST"])
+
 def index():
 
     if request.method == "POST":
@@ -24,12 +25,16 @@ def index():
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
                 raise ValueError("La cantidad debe estar entre 1 y 50")
 
-            coordinate_type = request.form.get("CoordinateType")
-            calculation_type = request.form.get("CalculationType")
+            
 
             results = []
 
             for i in range (quantity):
+
+                coordinate_type = request.form.get(f"CoordinateType_{i}")
+                calculation_type = request.form.get(f"CalculationType_{i}")
+                coordinate_format = request.form.get(f"CoordinateFormat_{i}")
+
                 if coordinate_type == "UTM":
 
                     east = float(request.form.get(f"East_{i}", 0 ))
@@ -42,8 +47,6 @@ def index():
                     latitude, longitude = utm_to_geodetic(east, north, utm_zone)
 
                 else:
-
-                    coordinate_format = request.form.get("CoordinateFormat")
 
                     if coordinate_format == "DD":
 
@@ -77,19 +80,30 @@ def index():
 
                         longitude = dms_to_decimal(longitude_degree, longitude_minutes, longitude_seconds)
 
-                       
-
-                       
-                        
 
 
+                if calculation_type == "OrthometricHeight":
+
+                    ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
+
+                    orthometric_height = calculate_orthometric_height(model, latitude, longitude, ellipsoidal_height)
+
+                else:
+
+                    orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
+
+                    ellipsoidal_height = calculate_ellipsoidal_height(model, latitude, longitude, orthometric_height)
 
 
 
+                results.append ({
+                "Latitude": latitude,
+                "Longitude": longitude,
+                "Orthometric_height": orthometric_height,
+                "Ellipsoidal_height": ellipsoidal_height
+                })
 
-                
-            
-            
+            return render_template("index.html", results=results)
 
         except ValueError as e:
             return render_template("index.html",error=str(e))
