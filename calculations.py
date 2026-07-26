@@ -42,10 +42,10 @@ def dm_to_decimal(degree, minutes):
 def dms_to_decimal(degree, minutes, seconds):
 
     if seconds < 0 or seconds >= 60:
-        raise ValueError("los segundos deben estar entre 0 y 59.9999.")
+        raise ValueError("Los segundos deben estar entre 0 y 59.9999.")
 
     if minutes < 0 or minutes >= 60:
-        raise ValueError("los minutos deben estar entre 0 y 59.9999.")
+        raise ValueError("Los minutos deben estar entre 0 y 59.9999.")
 
     if degree < 0:
         decimal = -(abs(degree) + minutes / 60 + seconds / 3600)
@@ -64,7 +64,7 @@ def calculate_ellipsoidal_height(model, latitude, longitude, h):
     
     i, j, i_trunc, j_trunc = model.calculate_indices(latitude, longitude)
 
-    NA, NB, NC, ND = model.get_vertices(i_trunc, j_trunc)\
+    NA, NB, NC, ND = model.get_vertices(i_trunc, j_trunc)
 
     t, u = model.calculate_tu(latitude, longitude, NA, NB, ND)
 
@@ -72,7 +72,7 @@ def calculate_ellipsoidal_height(model, latitude, longitude, h):
 
     ellipsoidal_height = h + N
 
-    return {"ellipsoidal_height": ellipsoidal_height}
+    return {"Ellipsoidal_height": ellipsoidal_height}
 
 
 
