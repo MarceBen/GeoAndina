@@ -17,7 +17,7 @@
 
     <div class = "row justify-content-center align-items-center h-100">
 
-        <div class = "col-lg-8 col-xl-7">
+        <div class = "col-lg-7">
 
             <div class = "card">
 
@@ -25,9 +25,9 @@
 
                     <div class = "text-center">
 
-                        <h1 class = "my-1">GeoAndina</h1>
-                        <h5 class = "my-1">Software de calculos geodesico</h5>
-                        <h5 class = "my-1"><strong>EGM2008 - Perú</strong></h5>
+                        <h1 class = "my-3">GeoAndina</h1>
+                        <p class = "my-3">Software de cálculos geodésicos</p>
+                        <p class = "my-3"><strong>EGM2008 - Perú</strong></p>
                        
 
                     </div>
@@ -36,11 +36,11 @@
 
                         <div class = "row">
 
-                            <div class = "col-md-4 mx-auto">
+                            <div class = "col-md-4 mx-auto mt-2">
 
-                                <label for="quantity">Cantidad de puntos a calcular:</label>
+                                <label for="quantity">Puntos a generar:</label>
                     
-                                <input type="number" id="quantity" name="quantity" step="1" class = "form-control" required>
+                                <input type="number" id="quantity" name="quantity" step="1" class = "form-control" min="1" required>
 
                             </div>
 
@@ -66,6 +66,18 @@
         </div>
 
     </div>
+
+    {% if result %}
+
+    <div class = "text-center">
+
+        <h2 class = "my-2">Resultados</h2>
+        <p class = "my-2">Basados en los respectivos cálculos matemáticos del modelo.</p>
+
+    </div>
+
+
+    {% endif %}
    
 
 
