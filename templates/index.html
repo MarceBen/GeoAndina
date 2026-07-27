@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <title>MODELO GEOIDAL EGM 2008 - PERÚ</title>
+    <title>GeoAndina v1.1</title>
+
 </head>
 
 <body>
@@ -14,9 +15,7 @@
 
 <div class = "container vh-100">
 
-    <div class = "row justify-content-center align-items-center h-100 ">
-
-        
+    <div class = "row justify-content-center align-items-center h-100 col-lg-8 col-xl-7 ">
 
             <div class = "card">
 
@@ -24,48 +23,32 @@
 
                     <div class = "text-center">
 
-                        <h1 class = "mt-2 mb-2">MODELO GEOIDAL EGM 2008 - PERÚ</h1>
+                        <h1 my-1>GeoAndina</h1>
+                        <p my-1>Software de calculos geodesico</p>
+                        <p my-1><strong>EGM2008 - Perú</strong></p>
+                       
 
                     </div>
-            
-            
-                    <p class = " text-center mb-2"><strong>Ingrese las coordenadas geodésicas y la altura elipsoidal para calcular la altura ortométrica.</strong></p>
-
+                    
                     <form method="POST">
 
                         <div class = "row">
 
-                            <div class = "col">
+                            <div class = "col-md-4 mx-auto">
 
-                                <label for="Latitude">Introduzca la latitud en grados sexagesimales:</label>
+                                <label for="quantity">Cantidad de puntos a calcular:</label>
                     
-                                <input type="number" id="Latitude" name="Latitude" step="any" class = "form-control" required>
+                                <input type="number" id="quantity" name="quantity" step="1" class = "form-control" required>
 
                             </div>
 
-                            <div class = "col">
-
-                                <label for="Longitude">Introduzca la longitud en grados sexagesimales:</label>
-                    
-                                <input type="number" id="Longitude" name="Longitude" step="any" class="form-control" required>
-
-                            </div>
-
-                            <div class = "col">
-
-                                <label for="Height">Introduzca la altura elipsoidal (m):</label>
-                    
-                                <input type="number" id="Height" name="Height" step="any" class = "form-control" required>
-
-
-                            </div>
-
+                           
                         </div>
 
                         <div class = "text-center">
 
-                            <button type="submit" class = "btn btn-primary mt-3">
-                                Calcular
+                            <button type="submit" class = "btn btn-primary mt-3 px-4">
+                                Generar
                             </button>
 
 
@@ -82,276 +65,8 @@
 
         </div>
 
-        {% if result %}
-
-    <div class = "container">
-
-        <div class = "row justify-content-center align-items-center h-100">
-
-            <div class = "col-6">
-
-                <div class = "card mb-4">
-
-                    <h3 class = "card-header">
-                        Resultados Obtenidos
-                    </h3>
-
-                    <div class = "card-body">
-
-                        <p>
-                            <strong>Ondulación geoidal (N):</strong>
-                            {{ "%.6f"|format(result["Geoid_undulation"]) }} m
-                        </p>
-
-                        <p>
-                            <strong>Altura ortométrica (H):</strong>
-                            {{ "%.6f"|format(result["Orthometric_height"]) }} m
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    <div class = "container">
-
-        <div class = "row justify-content-center align-items-center h-100">
-
-            <div class = "col-6">
-
-                <div class = "card my-4">
-
-                    <h3 class = "text-center card-header">
-                        Datos de entrada
-                    </h3>
-
-                    <div class = "card-body">
-
-                        <p><strong>Latitud:</strong>
-                             {{ "%.8f"|format(result["Latitude"]) }}
-                        </p>
-
-                        <p><strong>Longitud:</strong>
-                             {{ "%.8f"|format(result["Longitude"]) }}
-                        </p>
-
-                        <p><strong>Altura elipsoidal:</strong>
-                             {{ "%.3f"|format(result["Ellipsoidal Height"]) }} m
-                        </p>
-
-                    
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-       <div class = "container">
-
-        <div class = "row justify-content-center align-items-center h-100">
-
-            <div class = "col-6">
-
-                <div class = "card my-4">
-
-                    <h3 class = "text-center card-header">
-                        Ubicación del punto dentro de la grilla
-                    </h3>
-
-                    <div class = "card-body">
-
-                        <p>
-
-                            El punto se encuentra entre las columnas {{ result["Truncated_index_i"] }} y {{ result["Truncated_index_i"] + 1 }}
-
-                        </p>
-
-                        <p>
-                            El punto se encuentra entre las filas {{ result["Truncated_index_j"] }} y {{ result["Truncated_index_j"] + 1 }}
-                        </p>
-
-                        <h3 class = "text-center card-title">
-
-                            Índices Calculados
-
-                        </h3>
-
-                        <p><strong>i:</strong>
-
-                             {{ "%.6f"|format(result["Index_i"]) }}
-
-                        </p>
-
-                        <p><strong>j:</strong>
-
-                             {{ "%.6f"|format(result["Index_j"]) }}
-                             
-                        </p>
-
-                    
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class = "container">
-
-        <div class = "row justify-content-center align-items-center h-100">
-
-            <div class = "col-10">
-
-                <div class = "card my-4">
-
-                     <h3 class = "card-header text-center">
-
-                        Vertices Obtenidos Mediante los Indices
-
-                    </h3>
-
-                    <div class = "card-body">
-
-                        <table class = "table table-striped">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>Vértice</th>
-
-                                    <th>Latitud</th>
-
-                                    <th>Longitud</th>
-
-                                    <th>Ondulación (m)</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                <tr>
-                                    <td>NA</td>
-
-                                    <td>{{ "%.6f"|format(result["NA"]["Latitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NA"]["Longitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NA"]["N_ondulacion_m"]) }}</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>NB</td>
-
-                                    <td>{{ "%.6f"|format(result["NB"]["Latitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NB"]["Longitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NB"]["N_ondulacion_m"]) }}</td>
-
-                                </tr> 
-
-                                <tr>
-
-                                    <td>NC</td>
-
-                                    <td>{{ "%.6f"|format(result["NC"]["Latitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NC"]["Longitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["NC"]["N_ondulacion_m"]) }}</td>
-
-                                </tr>
-
-                                <tr>
-
-                                    <td>ND</td>
-
-                                    <td>{{ "%.6f"|format(result["ND"]["Latitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["ND"]["Longitud_deg"]) }}</td>
-
-                                    <td>{{ "%.6f"|format(result["ND"]["N_ondulacion_m"]) }}</td>
-
-                                </tr>
-
-                            </tbody>
-
-            
-                        </table>
-
-                    </div>
-
-                    </div>
-
-               
-
-            </div>
-
-        </div>
-
     </div>
    
-
-    <div class = "container">
-
-        <div class = "row justify-content-center align-items-center h-100">
-
-            <div class = "col-6">
-
-                <div class = "card my-4">
-
-                    <h2 class = "card-header text-center">
-
-                        Parámetros de interpolación
-
-                    </h2>
-
-                    <div class = "card-body">
-
-                        <p><strong>t:</strong>
-                             {{ "%.6f"|format(result["t"]) }}
-                        </p>
-
-                        <p><strong>u:</strong>
-
-                             {{ "%.6f"|format(result["u"]) }}
-
-                        </p>
-
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            
-        </div>
-
-    </div>
-
-
-        {% endif %}
-
-
-
-    </div>
-
 
 
 
