@@ -108,7 +108,7 @@ def index():
                 results.append ({
                 "latitude": latitude,
                 "longitude": longitude,
-                "lrthometric_height": orthometric_height,
+                "orthometric_height": orthometric_height,
                 "ellipsoidal_height": ellipsoidal_height
                 })
 
