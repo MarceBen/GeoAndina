@@ -46,7 +46,7 @@ def index():
 
                     latitude, longitude = utm_to_geodetic(east, north, utm_zone)
 
-                else:
+                elif coordinate_type == "Geodetic":
 
                     if coordinate_format == "DD":
 
@@ -80,6 +80,12 @@ def index():
 
                         longitude = dms_to_decimal(longitude_degree, longitude_minutes, longitude_seconds)
 
+                    else:
+                        raise ValueError("Formato de coordenada no válido")
+
+                else:
+                    raise ValueError("Tipo de coordenada no válido")
+
 
 
                 if calculation_type == "OrthometricHeight":
@@ -88,19 +94,22 @@ def index():
 
                     orthometric_height = calculate_orthometric_height(model, latitude, longitude, ellipsoidal_height)
 
-                else:
+                elif calculation_type == "EllipsoidalHeight":
 
                     orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
 
                     ellipsoidal_height = calculate_ellipsoidal_height(model, latitude, longitude, orthometric_height)
 
+                else:
+                    raise ValueError("Tipo de cálculo no válido")
+
 
 
                 results.append ({
-                "Latitude": latitude,
-                "Longitude": longitude,
-                "Orthometric_height": orthometric_height,
-                "Ellipsoidal_height": ellipsoidal_height
+                "latitude": latitude,
+                "longitude": longitude,
+                "lrthometric_height": orthometric_height,
+                "ellipsoidal_height": ellipsoidal_height
                 })
 
             return render_template("index.html", results=results)
