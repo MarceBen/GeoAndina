@@ -25,7 +25,7 @@ def calculate_orthometric_height(model, latitude, longitude, h):
 
     orthometric_height = h - N
 
-    return {"Orthometric_height": orthometric_height}
+    return orthometric_height
 
 def dm_to_decimal(degree, minutes):
 
@@ -72,7 +72,7 @@ def calculate_ellipsoidal_height(model, latitude, longitude, h):
 
     ellipsoidal_height = h + N
 
-    return {"Ellipsoidal_height": ellipsoidal_height}
+    return ellipsoidal_height
 
 
 
