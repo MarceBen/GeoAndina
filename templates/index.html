@@ -49,7 +49,7 @@
 
                         <div class = "text-center">
 
-                            <button type="submit" class = "btn btn-primary mt-3 px-4">
+                            <button type="submit" name = "action" value = "generate" class = "btn btn-primary mt-3 px-4">
                                 Generar
                             </button>
 
@@ -67,14 +67,28 @@
 
     </div>
 
-    {% if result %}
+    {% if quantity %}
 
     <div class = "text-center">
 
-        <h2 class = "my-2">Resultados</h2>
-        <p class = "my-2">Basados en los respectivos cálculos matemáticos del modelo.</p>
+        <h2 class = "my-2">Ingresos de datos</h2>
+        <p class = "my-2">Complete la informacion correspondiete.</p>
 
     </div>
+
+        {% for i in range(quantity) %}
+
+            <div class = "card my-3">0B|
+                >+
+                <div class = "card-body">
+
+                    <p><strong>Punto {{ i + 1 }}</strong></p>
+
+                </div>
+
+            </div>  
+
+        {% endfor %}
 
 
     {% endif %}
