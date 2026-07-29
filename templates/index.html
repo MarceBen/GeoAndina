@@ -86,7 +86,7 @@
                 
                     <div class = "card-body">
 
-                        <p><strong>Punto {{ i + 1 }} a calcular</strong></p>
+                        <p><strong>Punto {{ i + 1 }}</strong></p>
 
                         <label for="CoordinateType_{{ i }}">Tipo de coordenada</label>
 
@@ -200,7 +200,7 @@
 
                         </div>
 
-                        <div id = "UTMFields_{{ i }}">
+                        <div id = "utmFields_{{ i }}">
 
                             <label for="East_{{ i }}">Este (m)</label>
 
@@ -213,7 +213,7 @@
 
                         </div>
 
-                        <div id = "HeightFields_{{ i }}">
+                        <div id = "heightFields_{{ i }}">
 
                             <label for = "EllipsoidalHeight_{{ i }}">Altura elipsoidal</label>
 
@@ -232,8 +232,55 @@
 
         {% endfor %}
 
+            <div class = "text-center">
+
+                <button class = "btn btn-primary mt-3 px-4" type = "submit" name = "action" value = "calculate">
+
+                    Calcular
+
+                </button>
+
+            </div>
+
 
         </form>
+
+            {% if results %}
+
+                {% for result in results %}
+
+                    <div class = "card my-3">
+
+                        <div class = "card-body">
+
+                            {% if result["calculation_type"] == "OrthometricHeight" %}
+
+                            <p><strong>Altura ortométrica del punto {{ loop.index }}</strong></p>
+
+                            <p>{{ result["orthometric_height"] }}</p>
+
+                            {% elif result["calculation_type"] == "EllipsoidalHeight" %}
+
+                            <p><strong>Altura elipsoidal del punto {{ loop.index }}</strong></p>
+
+                            <p>{{ result["ellipsoidal_height"] }}</p>
+
+                            {% else %}
+
+                            <p><strong>Tipo de calculo desconocido :C</strong></p>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
 
 
     {% endif %}
