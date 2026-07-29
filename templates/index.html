@@ -72,17 +72,56 @@
     <div class = "text-center">
 
         <h2 class = "my-2">Ingresos de datos</h2>
-        <p class = "my-2">Complete la informacion correspondiete.</p>
+        <p class = "my-2">Complete la informacion correspondiete por cada punto.</p>
 
     </div>
 
         {% for i in range(quantity) %}
 
-            <div class = "card my-3">0B|
-                >+
+            <div class = "card my-3">
+                
                 <div class = "card-body">
 
-                    <p><strong>Punto {{ i + 1 }}</strong></p>
+                    <p><strong>Punto {{ i + 1 }} a calcular</strong></p>
+
+                    <label for="CoordinateType_{{ i }}">Tipo de coordenada</label>
+
+                    <select class = "form-select" name="CoordinateType_{{ i }}" id="CoordinateType_{{ i }}">
+
+                        <option value="Geodetic">Geodética</option>
+                        <option value="UTM">UTM</option>
+
+
+                    </select>
+
+                    <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
+
+                    <select class = "form-select" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
+
+                        <option value="DD">Grados Sexagesimales</option>
+                        <option value="DM">Grados y Minutos</option>
+                        <option value="DMS">Grados, minutos y segundos</option>
+
+                    </select>
+
+                    <label for="UTMZone_{{ i }}">Zona UTM:</label>
+
+                    <label for="CalculationType_{{ i }}"></label>
+
+                    <select class = "form-select" name="CalculationType_{{ i }}" id="CalculationType_{{ i }}">
+
+                        <option value="OrthometricHeight">Altura ortométrica</option>
+                        <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+
+                    </select>
+
+                    
+
+
+
+                    
+
+                    
 
                 </div>
 
