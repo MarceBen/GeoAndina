@@ -253,13 +253,13 @@
 
                         <div class = "card-body">
 
-                            {% if result["calculation_type"] == "OrthometricHeight" %}
+                            {% if result["CalculationType"] == "OrthometricHeight" %}
 
                             <p><strong>Altura ortométrica del punto {{ loop.index }}</strong></p>
 
                             <p>{{ result["orthometric_height"] }}</p>
 
-                            {% elif result["calculation_type"] == "EllipsoidalHeight" %}
+                            {% elif result["CalculationType"] == "EllipsoidalHeight" %}
 
                             <p><strong>Altura elipsoidal del punto {{ loop.index }}</strong></p>
 

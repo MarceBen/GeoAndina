@@ -110,7 +110,7 @@ def index():
                         raise ValueError("Tipo de cálculo no válido")
 
                     results.append ({
-                        "calculation_type": calculation_type,
+                        "CalculationType": calculation_type,
                         "latitude": latitude,
                         "longitude": longitude,
                         "orthometric_height": orthometric_height,
