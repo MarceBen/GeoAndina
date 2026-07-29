@@ -75,52 +75,155 @@
         <p class = "my-2">Complete la informacion correspondiete por cada punto.</p>
 
     </div>
+    
+        <form method="POST">
 
-        {% for i in range(quantity) %}
+            <input type="hidden" name="quantity" value="{{ quantity }}">
 
-            <div class = "card my-3">
+            {% for i in range(quantity) %}
+
+                <div class = "card my-3">
                 
-                <div class = "card-body">
+                    <div class = "card-body">
 
-                    <p><strong>Punto {{ i + 1 }} a calcular</strong></p>
+                        <p><strong>Punto {{ i + 1 }} a calcular</strong></p>
 
-                    <label for="CoordinateType_{{ i }}">Tipo de coordenada</label>
+                        <label for="CoordinateType_{{ i }}">Tipo de coordenada</label>
 
-                    <select class = "form-select" name="CoordinateType_{{ i }}" id="CoordinateType_{{ i }}">
+                        <select class = "form-select" name="CoordinateType_{{ i }}" id="CoordinateType_{{ i }}">
 
-                        <option value="Geodetic">Geodética</option>
-                        <option value="UTM">UTM</option>
-
-
-                    </select>
-
-                    <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
-
-                    <select class = "form-select" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
-
-                        <option value="DD">Grados Sexagesimales</option>
-                        <option value="DM">Grados y Minutos</option>
-                        <option value="DMS">Grados, minutos y segundos</option>
-
-                    </select>
-
-                    <label for="UTMZone_{{ i }}">Zona UTM:</label>
-
-                    <label for="CalculationType_{{ i }}"></label>
-
-                    <select class = "form-select" name="CalculationType_{{ i }}" id="CalculationType_{{ i }}">
-
-                        <option value="OrthometricHeight">Altura ortométrica</option>
-                        <option value="EllipsoidalHeight">Altura Elipsoidal</option>
-
-                    </select>
-
-                    
+                            <option value="Geodetic">Geodética</option>
+                            <option value="UTM">UTM</option>
 
 
+                        </select>
 
-                    
+                        <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
 
+                        <select class = "form-select" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
+
+                            <option value="DD">Grados Sexagesimales</option>
+                            <option value="DM">Grados y Minutos</option>
+                            <option value="DMS">Grados, minutos y segundos</option>
+
+                        </select>
+
+                        <label for="UTMZone_{{ i }}">Zona UTM:</label>
+
+                        <select class = "form-select" name = "UTMZone_{{ i }}" id="UTMZone_{{ i }}">
+
+                            <option value="17">17S</option>
+                            <option value="18">18S</option>
+                            <option value="19">19S</option>
+
+
+                        </select>
+
+                        <label for="CalculationType_{{ i }}">Tipo de cálculo</label>
+
+                        <select class = "form-select" name = "CalculationType_{{ i }}" id="CalculationType_{{ i }}">
+
+                            <option value="OrthometricHeight">Altura ortométrica</option>
+                            <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+
+                        </select>
+
+
+                        
+
+                        <div id = "ddFields_{{ i }}">
+
+                            <p class = "mt-3"><strong>Coordenadas DD</strong></p>
+
+                            <label for="Latitude_{{ i }}">Latitud (DD)</label>
+
+                            <input type = "number" class = "form-control" id = "Latitude_{{ i }}" name = "Latitude_{{ i }}" step = "any">
+
+                            <label for="Longitude_{{ i }}">Longitud (DD)</label>
+
+                            <input type = "number" class = "form-control" id = "Longitude_{{ i }}" name = "Longitude_{{ i }}" step = "any">
+
+
+                        </div>
+
+                        <div id = "dmFields_{{ i }}">
+
+                            <p class = "mt-3"><strong>Coordenadas DM</strong></p>
+
+                            <label for="LatitudeDegree_{{ i }}">Latitud - Grados</label>
+
+                            <input type = "number" class = "form-control" id = "LatitudeDegree_{{ i }}" name = "LatitudeDegree_{{ i }}">
+
+                            <label for="LatitudeMinutes_{{ i }}">Latitud - Minutos</label>
+
+                            <input type = "number" class = "form-control" id = "LatitudeMinutes_{{ i }}" name = "LatitudeMinutes_{{ i }}" step = "any">
+
+                            <label for="LongitudeDegree_{{ i }}">Longitud - Grados</label>
+
+                            <input type = "number" class = "form-control" id = "LongitudeDegree_{{ i }}" name = "LongitudeDegree_{{ i }}">
+
+                            <label for="LongitudeMinutes_{{ i }}">Longitud - Minutos</label>
+
+                            <input type = "number" class = "form-control" id = "LongitudeMinutes_{{ i }}" name = "LongitudeMinutes_{{ i }}" step = "any">
+
+
+                        </div>
+
+                        <div id = "dmsFields_{{ i }}">
+
+                            <p class = "mt-3"><strong>Coordenadas DMS</strong></p>
+
+                            <label for = "LatitudeDegreeDMS_{{ i }}">Latitud - Grados</label>
+
+                            <input type = "number" class = "form-control" id = "LatitudeDegreeDMS_{{ i }}" name = "LatitudeDegreeDMS_{{ i }}">
+
+                            <label for="LatitudeMinutesDMS_{{ i }}">Latitud - Minutos</label>
+
+                            <input type = "number" class = "form-control" id = "LatitudeMinutesDMS_{{ i }}" name = "LatitudeMinutesDMS_{{ i }}">
+
+                            <label for="LatitudeSecondsDMS_{{ i }}">Latitud - Segundos</label>
+
+                            <input type = "number" class = "form-control" id = "LatitudeSecondsDMS_{{ i }}" name = "LatitudeSecondsDMS_{{ i }}" step = "any">
+
+                            <label for="LongitudeDegreeDMS_{{ i }}">Longitud - Grados</label>
+
+                            <input type = "number" class = "form-control" id = "LongitudeDegreeDMS_{{ i }}" name = "LongitudeDegreeDMS_{{ i }}">
+
+                            <label for="LongitudeMinutesDMS_{{ i }}">Longitud - Minutos</label>
+
+                            <input type = "number" class = "form-control" id = "LongitudeMinutesDMS_{{ i }}" name = "LongitudeMinutesDMS_{{ i }}">
+
+                            <label for="LongitudeSecondsDMS_{{ i }}">Longitud - Segundos</label>
+
+                            <input type = "number" class = "form-control" id = "LongitudeSecondsDMS_{{ i }}" name = "LongitudeSecondsDMS_{{ i }}" step = "any">
+
+
+                        </div>
+
+                        <div id = "UTMFields_{{ i }}">
+
+                            <label for="East_{{ i }}">Este (m)</label>
+
+                            <input type = "number" class = "form-control" id = "East_{{ i }}" name = "East_{{ i }}" step = "any">
+
+                            <label for = "North_{{ i }}">Norte (m)</label>
+
+                            <input type = "number" class = "form-control" id = "North_{{ i }}" name = "North_{{ i }}" step = "any">
+
+
+                        </div>
+
+                        <div id = "HeightFields_{{ i }}">
+
+                            <label for = "EllipsoidalHeight_{{ i }}">Altura elipsoidal</label>
+
+                            <input type = "number" class="form-control" id = "EllipsoidalHeight_{{ i }}" name = "EllipsoidalHeight_{{ i }}" step = "any">
+
+                            <label for = "OrthometricHeight_{{ i }}">Altura ortométrica</label>
+
+                            <input type = "number" class = "form-control" id = "OrthometricHeight_{{ i }}" name = "OrthometricHeight_{{ i }}"step = "any">
+                            
+                        </div>
                     
 
                 </div>
@@ -128,6 +231,9 @@
             </div>  
 
         {% endfor %}
+
+
+        </form>
 
 
     {% endif %}
