@@ -58,6 +58,7 @@ def index():
 
         try:
             quantity = int(request.form.get("quantity", 1))
+            print("Quantity:", quantity)
             action = request.form.get("action")
 
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
