@@ -84,13 +84,13 @@
 
                 <div class = "card my-3">
                 
-                    <div class = "card-body">
+                    <div class = "card-body coordinate-card">
 
                         <p><strong>Punto {{ i + 1 }}</strong></p>
 
                         <label for="CoordinateType_{{ i }}">Tipo de coordenada</label>
 
-                        <select class = "form-select" name="CoordinateType_{{ i }}" id="CoordinateType_{{ i }}">
+                        <select class = "form-select coordinate-type" name="CoordinateType_{{ i }}" id="CoordinateType_{{ i }}">
 
                             <option value="Geodetic">Geodética</option>
                             <option value="UTM">UTM</option>
@@ -100,7 +100,7 @@
 
                         <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
 
-                        <select class = "form-select" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
+                        <select class = "form-select geodetic-format" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
 
                             <option value="DD">Grados Sexagesimales</option>
                             <option value="DM">Grados y Minutos</option>
