@@ -32,6 +32,9 @@ class EGModel2008: # CLASE QUE CARGA EL MODELO GEOIDAL
         i_trunc = mt.trunc(i)
         j_trunc = mt.trunc(j)
 
+        if (j_trunc, i_trunc) not in self.vertices.index:
+            raise ValueError("El punto se encuentra fuera de los límites del modelo")
+
         return i, j, i_trunc, j_trunc
     
     def get_vertices(self, i_trunc, j_trunc):

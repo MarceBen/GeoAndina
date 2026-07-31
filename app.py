@@ -58,7 +58,6 @@ def index():
 
         try:
             quantity = int(request.form.get("quantity", 1))
-            print("Quantity:", quantity)
             action = request.form.get("action")
 
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
@@ -73,6 +72,8 @@ def index():
                 results = []
             
                 for i in range (quantity):
+
+                    
             
                     coordinate_type = request.form.get(f"CoordinateType_{i}")
                     calculation_type = request.form.get(f"CalculationType_{i}")
@@ -111,15 +112,15 @@ def index():
             
                         elif coordinate_format == "DMS":
             
-                            latitude_degree = float(request.form.get(f"LatitudeDegree_{i}", 0 ))
-                            latitude_minutes = float(request.form.get(f"LatitudeMinutes_{i}", 0 ))
-                            latitude_seconds = float(request.form.get(f"LatitudeSeconds_{i}", 0 ))
+                            latitude_degree = float(request.form.get(f"LatitudeDegreeDMS_{i}", 0 ))
+                            latitude_minutes = float(request.form.get(f"LatitudeMinutesDMS_{i}", 0 ))
+                            latitude_seconds = float(request.form.get(f"LatitudeSecondsDMS_{i}", 0 ))
             
                             latitude = dms_to_decimal(latitude_degree, latitude_minutes, latitude_seconds)
             
-                            longitude_degree = float(request.form.get(f"LongitudeDegree_{i}", 0 ))
-                            longitude_minutes = float(request.form.get(f"LongitudeMinutes_{i}", 0 ))
-                            longitude_seconds = float(request.form.get(f"LongitudeSeconds_{i}", 0 ))
+                            longitude_degree = float(request.form.get(f"LongitudeDegreeDMS_{i}", 0 ))
+                            longitude_minutes = float(request.form.get(f"LongitudeMinutesDMS_{i}", 0 ))
+                            longitude_seconds = float(request.form.get(f"LongitudeSecondsDMS_{i}", 0 ))
             
                             longitude = dms_to_decimal(longitude_degree, longitude_minutes, longitude_seconds)
             
@@ -144,13 +145,16 @@ def index():
                     else:
                         raise ValueError("Tipo de cálculo no válido")
 
+                    
+
                     results.append ({
                         "CalculationType": calculation_type,
                         "latitude": latitude,
                         "longitude": longitude,
-                        "orthometric_height": orthometric_height,
-                        "ellipsoidal_height": ellipsoidal_height
+                        "orthometric_height": float(orthometric_height), 
+                        "ellipsoidal_height": float(ellipsoidal_height)
                         })
+
                                     
                 return render_template("index.html", quantity = quantity, results=results) 
             
@@ -158,7 +162,12 @@ def index():
                 raise ValueError("Accion Invalida")   
 
         except ValueError as e:
-            return render_template("index.html", quantity = quantity, results = results,error=str(e))
+            return render_template("index.html", quantity = quantity, results = results, error = str(e))
+
+        except Exception as e:
+            return render_template("index.html", quantity = quantity, results = results, error = "Ocurrio un error inesperado")
+            
+            
 
     return render_template("index.html", quantity = quantity, results = results)
 

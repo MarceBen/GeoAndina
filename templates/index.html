@@ -146,11 +146,11 @@
 
                             <p class = "mt-3"><strong>Coordenadas DD</strong></p>
 
-                            <label for="Latitude_{{ i }}">Latitud (DD)</label>
+                            <label for="Latitude_{{ i }}">Latitud </label>
 
                             <input type = "number" class = "form-control" id = "Latitude_{{ i }}" name = "Latitude_{{ i }}" step = "any">
 
-                            <label for="Longitude_{{ i }}">Longitud (DD)</label>
+                            <label for="Longitude_{{ i }}">Longitud </label>
 
                             <input type = "number" class = "form-control" id = "Longitude_{{ i }}" name = "Longitude_{{ i }}" step = "any">
 
@@ -264,38 +264,86 @@
 
             {% if results %}
 
-                {% for result in results %}
+<div class="mt-5">
 
-                    <div class = "card my-3">
+     {% if error %}
 
-                        <div class = "card-body">
+        <p class = "text-danger text-center mt-3"><strong>
 
-                            {% if result["CalculationType"] == "OrthometricHeight" %}
+            {{ error }}
 
-                            <p><strong>Altura ortométrica del punto {{ loop.index }}</strong></p>
+        </strong></p>
 
-                            <p>{{ result["orthometric_height"] }}</p>
+    {% endif %}
 
-                            {% elif result["CalculationType"] == "EllipsoidalHeight" %}
+    <h2 class="text-center mb-4">Resultados</h2>
 
-                            <p><strong>Altura elipsoidal del punto {{ loop.index }}</strong></p>
+    {% for result in results %}
 
-                            <p>{{ result["ellipsoidal_height"] }}</p>
+    <div class="card shadow-sm mb-4">
 
-                            {% else %}
+        <div class="card-header bg-primary text-white">
 
-                            <p><strong>Tipo de calculo desconocido :C</strong></p>
+            <strong>Punto {{ loop.index }}</strong>
 
-                            {% endif %}
+        </div>
 
+        <div class="card-body">
 
-                        </div>
+            <p>
+                <strong>Latitud:</strong>
+                {{ "%.6f"|format(result["latitude"]) }}°
+            </p>
 
-                    </div>
+            <p>
+                <strong>Longitud:</strong>
+                {{ "%.6f"|format(result["longitude"]) }}°
+            </p>
 
-                {% endfor %}
+            {% if result["CalculationType"] == "OrthometricHeight" %}
+
+                <p>
+                    <strong>Tipo de cálculo:</strong>
+                    Altura Ortométrica
+                </p>
+
+                <h3 class="fw-bold text-primary">
+
+                    {{ "%.3f"|format(result["orthometric_height"]) }} m
+
+                </h3>
+
+            {% else %}
+
+                <p>
+                    <strong>Tipo de cálculo:</strong>
+                    Altura Elipsoidal
+                </p>
+
+                <h3 class="fw-bold text-success">
+
+                    {{ "%.3f"|format(result["ellipsoidal_height"]) }} m
+
+                </h3>
 
             {% endif %}
+
+           
+
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+        
+
+          
 
 
 
