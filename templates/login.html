@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <title>Iniciar Sesion</title>
+</head>
+<body>
+
+    <div class = "container vh-100">
+
+        <div class = "row justify-content-center align-items-center h-100">
+
+            <div class = "col-lg-7">
+
+                <div class = "card">
+
+                    <div class = "card-body">
+
+                        <div class = "text-center">
+
+                            <h1 class = "my-3">GeoAndina v1.0</h1>
+                            <p class = "my-3">Iniciar Sesion</p>
+                            <p class = "my-3"><strong>Autor: Marcelo Benites</strong></p>
+
+                        </div>
+
+                        <form method="POST" action="{{ url_for('login') }}">
+
+                             <div class = "col-md-4 mx-auto mt-2">
+
+                                <label for="password" class = "form-label">Ingrese la clave del programa</label>
+                    
+                                <input type="password" id="password" name="password" class = "form-control" required>
+
+                                <div class = "text-center">
+
+                                    <button type="submit" class = "btn btn-primary mt-3 px-4">
+                                        Ingresar
+                                    </button>
+
+                                </div>
+
+                                
+
+                                {% if error %}
+                                 <p class = "text-danger text-center mt-3"><strong>
+                                    {{ error }}
+                                 </strong></p>
+                                {% endif %}
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+</body>
+</html>

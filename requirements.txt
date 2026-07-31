@@ -1,4 +1,4 @@
 pandas
 openpyxl
-PySide6
-pyinstaller
+python-dotenv
+Flask

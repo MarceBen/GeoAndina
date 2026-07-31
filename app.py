@@ -1,21 +1,55 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 from egm2008 import EGModel2008
 from calculations import calculate_orthometric_height, dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height
 from utm import utm_to_geodetic
+from dotenv import load_dotenv
+import os
+
 
 MAX_QUANTITY = 50
 MIN_QUANTITY = 1
 
+load_dotenv()
+
+ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 app = Flask(__name__)
+
+app.secret_key = SECRET_KEY
 
 # Cargar el modelo una sola vez al iniciar la aplicación
 model = EGModel2008()
 model.load_model()
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if session.get("Logged") == True:
+        return redirect(url_for("index"))
+
+    if request.method == "GET":
+        return render_template("login.html")
+
+    elif request.method == "POST":
+        password = request.form.get("password")
+
+        if password == ACCESS_PASSWORD:
+            session["Logged"] = True
+            return redirect(url_for("index"))
+        
+        else:
+            return render_template("login.html", error = "Contraseña Incorrecta")
+
+
 
 @app.route("/", methods=["GET", "POST"])
 
 def index():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+    
 
     results = None
     quantity = None
