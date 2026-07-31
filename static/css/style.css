@@ -4,6 +4,8 @@ body
 
     background:linear-gradient(180deg,#eef3f9, #e7edf5);
 
+    min-height: 100vh;
+
 }
 
 @keyframes appear
@@ -40,6 +42,15 @@ to
     box-shadow: 0 18px 40px rgba(0,0,0,.10);
 
     animation:appear .45s ease;
+
+    transition: 25s;
+}
+
+.card:hover
+{
+    transform:translateY(-4px);
+
+    box-shadow: 0 24px 50px rgba(0,0,0,.15);
 }
 
 
@@ -65,7 +76,7 @@ p
 
     padding:12px;
 
-    border: 1px solid d5dce5;
+    border: 1px solid #d5dce5;
 
     transition: .2s;
 }
@@ -140,6 +151,36 @@ h2
     margin-bottom:.5rem;
 
 }
+
+.card-header
+{
+    border-radius:22px 22px 0 0 !important;
+
+    font-weight:600;
+}
+
+h3
+{
+    font-size:2rem;
+
+    font-weight:700;
+
+    color:#198754;
+}
+
+.btn-primary
+{
+    background:#1f4d83;
+
+    border:none;
+}
+
+.btn-primary:hover
+{
+    background:#285f9d;
+}
+
+
 
 
 
