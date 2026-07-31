@@ -10,8 +10,15 @@ function updateCard(inputCard)
     const ddFields = inputCard.querySelector(".dd-fields");
     const dmFields = inputCard.querySelector(".dm-fields");
     const dmsFields = inputCard.querySelector(".dms-fields");
+
+    const utmZoneFields = inputCard.querySelector(".utmzone-fields");
+    const geodeticFormatCmbox = inputCard.querySelector(".geodeticformat-fields");
+
+
     const ellipsoidalFields = inputCard.querySelector(".ellipsoidal-fields");
     const orthometricFields = inputCard.querySelector(".orthometric-fields");
+
+
 
     if(coordinateType.value === "Geodetic")
     {
@@ -21,6 +28,8 @@ function updateCard(inputCard)
             dmFields.style.display = "none";
             dmsFields.style.display = "none";
             utmFields.style.display = "none";
+            utmZoneFields.style.display = "none";
+            geodeticFormatCmbox.style.display = "block";
         }
         else if (geodeticFormat.value === "DM")
         {
@@ -28,6 +37,8 @@ function updateCard(inputCard)
             dmFields.style.display = "block";
             dmsFields.style.display = "none";
             utmFields.style.display = "none";
+            utmZoneFields.style.display = "none";
+            geodeticFormatCmbox.style.display = "block";
         }
         else if (geodeticFormat.value === "DMS")
         {
@@ -35,6 +46,9 @@ function updateCard(inputCard)
             dmFields.style.display = "none";
             dmsFields.style.display = "block";
             utmFields.style.display = "none";
+            utmZoneFields.style.display = "none";
+            geodeticFormatCmbox.style.display = "block";
+
         }
         else
         {
@@ -44,9 +58,11 @@ function updateCard(inputCard)
     else if (coordinateType.value === "UTM")
     {
         utmFields.style.display = "block";
+        geodeticFormatCmbox.style.display = "none";
         ddFields.style.display = "none";
         dmFields.style.display = "none";
         dmsFields.style.display = "none";
+        utmZoneFields.style.display = "block";
     }
     else
     {
@@ -67,6 +83,8 @@ function updateCard(inputCard)
     {
         throw new Error("Tipo de cálculo invalido.");
     }
+
+    
         
     
 
@@ -78,12 +96,16 @@ inputCard.forEach(card => {
     const coordinateType = card.querySelector(".coordinate-type");
     const geodeticFormat = card.querySelector(".geodetic-format");
     const calculationType = card.querySelector(".calculation-type");
+    const utmZoneFields = card.querySelector(".utmzone-fields");
+    const geodeticFormatCmbox = card.querySelector(".geodeticformat-fields");
+    
 
     updateCard(card);
 
     coordinateType.addEventListener("change", () => updateCard(card));
     geodeticFormat.addEventListener("change", () => updateCard(card));
     calculationType.addEventListener("change", () => updateCard(card));
+
 
 
 });

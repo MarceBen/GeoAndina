@@ -98,26 +98,40 @@
 
                         </select>
 
-                        <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
+                        <div class = geodeticformat-fields>
 
-                        <select class = "form-select geodetic-format" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
+                            <label for="CoordinateFormat_{{ i }}">Formato de coordenada</label>
 
-                            <option value="DD">Grados Sexagesimales</option>
-                            <option value="DM">Grados y Minutos</option>
-                            <option value="DMS">Grados, minutos y segundos</option>
+                            <select class = "form-select geodetic-format" name="CoordinateFormat_{{ i }}" id="CoordinateFormat_{{ i }}">
 
-                        </select>
+                                <option value="DD">Grados Sexagesimales</option>
+                                <option value="DM">Grados y Minutos</option>
+                                <option value="DMS">Grados, minutos y segundos</option>
 
-                        <label for="UTMZone_{{ i }}">Zona UTM:</label>
-
-                        <select class = "form-select" name = "UTMZone_{{ i }}" id="UTMZone_{{ i }}">
-
-                            <option value="17">17S</option>
-                            <option value="18">18S</option>
-                            <option value="19">19S</option>
+                            </select>
 
 
-                        </select>
+
+                        </div>
+
+                        
+
+                        <div class = utmzone-fields>
+
+                            <label for="UTMZone_{{ i }}">Zona UTM:</label>
+
+                            <select class = "form-select" name = "UTMZone_{{ i }}" id="UTMZone_{{ i }}">
+
+                                <option value="17">17S</option>
+                                <option value="18">18S</option>
+                                <option value="19">19S</option>
+
+
+                            </select>
+
+                        </div>
+
+                        
 
                         <label for="CalculationType_{{ i }}">Tipo de cálculo</label>
 
