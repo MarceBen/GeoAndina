@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 
 
-MAX_QUANTITY = 50
+MAX_QUANTITY = 1000
 MIN_QUANTITY = 1
 
 load_dotenv()
@@ -56,12 +56,29 @@ def index():
 
     if request.method == "POST":
 
+
+        coordinate_type = request.form.get("CoordinateType")
+
+        if coordinate_type not in ["Geodetic", "UTM"]:
+            raise ValueError("El tipo de coordenada debe ser Geodética o UTM")
+
+        if coordinate_type == "UTM":
+
+            utm_zone = int(request.form.get("UTMZone", 18 ))
+
+            if utm_zone not in [17, 18, 19]:
+                raise ValueError("La zona UTM debe ser 17, 18 o 19")
+
+        
+
+
         try:
             quantity = int(request.form.get("quantity", 1))
             action = request.form.get("action")
 
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
-                raise ValueError("La cantidad debe estar entre 1 y 50")
+                raise ValueError("La cantidad debe estar entre 1 y 1000")
+
 
 
             if action  == "generate":
@@ -72,10 +89,7 @@ def index():
                 results = []
             
                 for i in range (quantity):
-
                     
-            
-                    coordinate_type = request.form.get(f"CoordinateType_{i}")
                     calculation_type = request.form.get(f"CalculationType_{i}")
                     coordinate_format = request.form.get(f"CoordinateFormat_{i}")
             
@@ -83,11 +97,6 @@ def index():
             
                         east = float(request.form.get(f"East_{i}", 0 ))
                         north = float(request.form.get(f"North_{i}", 0 ))
-                        utm_zone = int(request.form.get(f"UTMZone_{i}", 18 ))
-            
-                        if utm_zone < 17 or utm_zone > 19:
-                            raise ValueError("La zona UTM debe estar entre 17 y 19")
-            
                         latitude, longitude = utm_to_geodetic(east, north, utm_zone)
             
                     elif coordinate_type == "Geodetic":
