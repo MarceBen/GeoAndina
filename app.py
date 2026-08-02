@@ -22,6 +22,11 @@ app.secret_key = SECRET_KEY
 model = EGModel2008()
 model.load_model()
 
+
+@app.route("/")
+def home():
+    return redirect(url_for("login"))
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
