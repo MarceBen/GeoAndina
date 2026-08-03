@@ -157,6 +157,14 @@ h2
     border-radius:22px 22px 0 0 !important;
 
     font-weight:600;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
 }
 
 h3
@@ -178,6 +186,23 @@ h3
 .btn-primary:hover
 {
     background:#285f9d;
+}
+
+.nav-buttons
+{
+    display: flex;
+
+    gap: 12px;
+
+}
+
+.secondary-btn
+{
+    padding: 8px 18px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
 }
 
 

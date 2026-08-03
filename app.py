@@ -183,7 +183,10 @@ def geodetic():
                             })
 
                                     
-                return render_template("geodetic.html", quantity = quantity, results=results) 
+                return render_template("geodetic.html", quantity = quantity, results=results)
+
+            elif action == "main_menu":
+                return redirect(url_for("main_menu"))
             
             else:
                 raise ValueError("Accion Invalida")   
@@ -282,8 +285,14 @@ def utm():
                                     })
         
                                             
-                        return render_template("utm.html", quantity = quantity, results=results) 
-                    
+                        return render_template("utm.html", quantity = quantity, results=results)
+             
+            elif action == "main_menu":
+                    return redirect(url_for("main_menu"))
+            
+            elif action == "return_utmzone":
+                    return redirect(url_for("utm_zone"))
+                   
             else:
                 raise ValueError("Accion Invalida")   
         
