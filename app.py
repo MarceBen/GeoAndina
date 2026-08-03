@@ -3,16 +3,31 @@ from egm2008 import EGModel2008
 from calculations import calculate_orthometric_height, dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height
 from utm import utm_to_geodetic
 from dotenv import load_dotenv
+from pathlib import Path
+
 import os
+import threading
+import webview
+import time
+import sys
+
 
 
 MAX_QUANTITY = 1000
 MIN_QUANTITY = 1
 
-load_dotenv()
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys._MEIPASS)
+else:
+    BASE_DIR = Path(__file__).parent
+
+env_path = BASE_DIR / ".env"
+
+load_dotenv(env_path)
 
 ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD")
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 app = Flask(__name__)
 
@@ -279,6 +294,19 @@ def utm():
             return render_template("utm.html", quantity = quantity, results = results, error = "Ocurrio un error inesperado")
         
     return render_template("utm.html", quantity = quantity, results = results)
+
+def run_flask():
+    app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
         
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    time.sleep(2)
+
+    webview.create_window(title="GeoAndina v1.1", url="http://127.0.0.1:5000", width=1280, height=800, resizable=True)
+
+    webview.start()
+   
