@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from egm2008 import EGModel2008
 from calculations import calculate_orthometric_height, dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height
 from utm import utm_to_geodetic
+from imports import parse_geodetic_file, parse_utm_file, allowed_file
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -36,6 +37,23 @@ app.secret_key = SECRET_KEY
 # Cargar el modelo una sola vez al iniciar la aplicación
 model = EGModel2008()
 model.load_model()
+
+
+def normalize_imported_results(raw_results):
+    normalized = []
+
+    for row in raw_results:
+
+        normalized.append({
+            "PointNumber": row.get("Number"),
+            "CalculationType": row["CalculationType"],
+            "latitude": row["Latitude"],
+            "longitude": row["Longitude"],
+            "orthometric_height": float(row["OrthometricHeight"]),
+            "ellipsoidal_height": float(row["EllipsoidalHeight"]),
+        })
+
+    return normalized
 
 
 @app.route("/")
@@ -153,7 +171,7 @@ def geodetic():
                         longitude = dms_to_decimal(longitude_degree, longitude_minutes, longitude_seconds)
             
                     else:
-                        raise ValueError("Formato de coordenada no válido")
+                        raise ValueError("Formato de coordenada no válido")
 
                
 
@@ -170,7 +188,7 @@ def geodetic():
                         ellipsoidal_height = calculate_ellipsoidal_height(model, latitude, longitude, orthometric_height)
                                     
                     else:
-                        raise ValueError("Tipo de cálculo no válido")
+                        raise ValueError("Tipo de cálculo no válido")
 
                     
 
@@ -198,6 +216,41 @@ def geodetic():
             return render_template("geodetic.html", quantity = quantity, results = results, error = "Ocurrio un error inesperado")
 
     return render_template("geodetic.html", quantity = quantity, results = results)
+
+
+@app.route("/geodetic/import", methods=["POST"])
+def geodetic_import():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+
+    try:
+
+        uploaded_file = request.files.get("file")
+        coordinate_format = request.form.get("CoordinateFormat")
+        calculation_type = request.form.get("CalculationType")
+
+        if not uploaded_file or uploaded_file.filename == "":
+            raise ValueError("Debe seleccionar un archivo para importar")
+
+        if not allowed_file(uploaded_file.filename):
+            raise ValueError("Formato de archivo no soportado. Use .csv o .txt")
+
+        raw_results = parse_geodetic_file(uploaded_file, model, coordinate_format, calculation_type)
+
+        results = normalize_imported_results(raw_results)
+
+        return render_template("geodetic.html", quantity=len(results), results=results)
+
+    except ValueError as e:
+        return render_template("geodetic.html", quantity=None, results=None, error=str(e))
+
+    except Exception:
+        return render_template(
+            "geodetic.html", quantity=None, results=None,
+            error="Ocurrio un error inesperado al importar el archivo"
+        )
+
 
 @app.route("/utm_zone", methods=["GET", "POST"])
 def utm_zone():
@@ -272,7 +325,7 @@ def utm():
                                 ellipsoidal_height = calculate_ellipsoidal_height(model, latitude, longitude, orthometric_height)
                                             
                             else:
-                                raise ValueError("Tipo de cálculo no válido")
+                                raise ValueError("Tipo de cálculo no válido")
         
                             
         
@@ -304,6 +357,46 @@ def utm():
         
     return render_template("utm.html", quantity = quantity, results = results)
 
+
+@app.route("/utm/import", methods=["POST"])
+def utm_import():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+
+    try:
+
+        uploaded_file = request.files.get("file")
+        utm_zone_value = request.form.get("UTMZone")
+        calculation_type = request.form.get("CalculationType")
+
+        if not uploaded_file or uploaded_file.filename == "":
+            raise ValueError("Debe seleccionar un archivo para importar")
+
+        if not allowed_file(uploaded_file.filename):
+            raise ValueError("Formato de archivo no soportado. Use .csv o .txt")
+
+        if utm_zone_value not in ["17", "18", "19"]:
+            raise ValueError("Seleccione una zona UTM válida")
+
+        session["UTMZone"] = int(utm_zone_value)
+
+        raw_results = parse_utm_file(uploaded_file, model, session["UTMZone"], calculation_type)
+
+        results = normalize_imported_results(raw_results)
+
+        return render_template("utm.html", quantity=len(results), results=results)
+
+    except ValueError as e:
+        return render_template("utm.html", quantity=None, results=None, error=str(e))
+
+    except Exception:
+        return render_template(
+            "utm.html", quantity=None, results=None,
+            error="Ocurrio un error inesperado al importar el archivo"
+        )
+
+
 def run_flask():
     app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
         
@@ -318,4 +411,3 @@ if __name__ == "__main__":
     webview.create_window(title="GeoAndina v1.1", url="http://127.0.0.1:5000", width=1280, height=800, resizable=True)
 
     webview.start()
-   
