@@ -1,5 +1,6 @@
 import csv
-from calculations import dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height, calculate_orthometric_height, utm_to_geodetic
+from calculations import dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height, calculate_orthometric_height
+from utm import utm_to_geodetic
 
 ALLOWED_EXTENSIONS = {"csv", "txt"}
 
