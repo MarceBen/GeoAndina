@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <title>GeoAndina v1.1</title>
 
@@ -26,26 +26,27 @@
 
                 <div class="card-body">
 
-                    <div class = "text-center">
+                    <div class = "nav-buttons">
 
-                        <h1 class = "my-3">GeoAndina</h1>
-                        <p class = "my-3">Software de cálculos geodésicos</p>
-                        <p class = "my-3"><strong>EGM2008 - Perú</strong></p>
+                        <button type="button" class="secondary-btn import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
+                            Importar CSV / TXT
+                        </button>
 
-                        <div class = "nav-buttons">
-
-                            <button class = "secondary-btn" name = "action" value = "main_menu" type = "submit">
-
-                                Menu Principal
-
-                            </button>
-
-                        </div>
-
+                        <button class = "secondary-btn" name = "action" value = "main_menu" type = "submit" form="quantityForm" formnovalidate>
+                            Menu Principal
+                        </button>
 
                     </div>
 
-                    <form method="POST">
+                    <div class = "text-center">
+
+                        <p class="app-eyebrow my-1">EGM2008 &middot; PERÚ</p>
+                        <h1 class = "my-3">GeoAndina</h1>
+                        <p class = "my-3">Cálculo de alturas geodésicas</p>
+
+                    </div>
+
+                    <form method="POST" id="quantityForm">
 
                         <div class = "row">
 
@@ -79,6 +80,16 @@
         </div>
 
     </div>
+
+    {% if error %}
+
+        <p class = "text-danger text-center mt-3"><strong>
+
+            {{ error }}
+
+        </strong></p>
+
+    {% endif %}
 
     {% if quantity %}
 
@@ -269,25 +280,15 @@
 
 <div class="mt-5">
 
-     {% if error %}
-
-        <p class = "text-danger text-center mt-3"><strong>
-
-            {{ error }}
-
-        </strong></p>
-
-    {% endif %}
-
     <h2 class="text-center mb-4">Resultados</h2>
 
     {% for result in results %}
 
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4 result-card">
 
-        <div class="card-header bg-primary text-white">
+        <div class="card-header">
 
-            <strong>Punto {{ loop.index }}</strong>
+            <strong>{% if result.PointNumber %}Punto {{ result.PointNumber }}{% else %}Punto {{ loop.index }}{% endif %}</strong>
 
         </div>
 
@@ -295,12 +296,12 @@
 
             <p>
                 <strong>Latitud:</strong>
-                {{ "%.6f"|format(result["latitude"]) }}°
+                <span class="data-value">{{ "%.6f"|format(result["latitude"]) }}°</span>
             </p>
 
             <p>
                 <strong>Longitud:</strong>
-                {{ "%.6f"|format(result["longitude"]) }}°
+                <span class="data-value">{{ "%.6f"|format(result["longitude"]) }}°</span>
             </p>
 
             {% if result["CalculationType"] == "OrthometricHeight" %}
@@ -310,7 +311,7 @@
                     Altura Ortométrica
                 </p>
 
-                <h3 class="fw-bold text-primary">
+                <h3 class="fw-bold text-primary data-value">
 
                     {{ "%.3f"|format(result["orthometric_height"]) }} m
 
@@ -323,7 +324,7 @@
                     Altura Elipsoidal
                 </p>
 
-                <h3 class="fw-bold text-success">
+                <h3 class="fw-bold text-success data-value">
 
                     {{ "%.3f"|format(result["ellipsoidal_height"]) }} m
 
@@ -345,6 +346,58 @@
 
     {% endif %}
 
+
+</div>
+
+<!-- Modal de importación CSV / TXT -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('geodetic_import') }}" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importModalLabel">Importar coordenadas geodésicas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label for="importCoordinateFormat" class="form-label">Formato de coordenadas en el archivo</label>
+            <select class="form-select" id="importCoordinateFormat" name="CoordinateFormat" required>
+                <option value="DD">Grados Sexagesimales (DD)</option>
+                <option value="DM">Grados y Minutos (DM)</option>
+                <option value="DMS">Grados, Minutos y Segundos (DMS)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="importCalculationType" class="form-label">Altura incluida en el archivo</label>
+            <select class="form-select" id="importCalculationType" name="CalculationType" required>
+                <option value="OrthometricHeight">Altura Ortométrica</option>
+                <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+            </select>
+          </div>
+
+          <div class="mb-2">
+            <label for="importFile" class="form-label">Archivo (.csv o .txt, sin encabezados)</label>
+            <input class="form-control" type="file" id="importFile" name="file" accept=".csv,.txt" required>
+          </div>
+
+          <p class="text-muted small mb-0">
+            Columnas esperadas (sin encabezado), según el formato elegido:<br>
+            <strong>DD:</strong> N°, latitud, longitud, altura<br>
+            <strong>DM:</strong> N°, lat. grados, lat. minutos, lon. grados, lon. minutos, altura<br>
+            <strong>DMS:</strong> N°, lat. grados, lat. minutos, lat. segundos, lon. grados, lon. minutos, lon. segundos, altura
+          </p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Importar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
