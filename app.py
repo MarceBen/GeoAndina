@@ -14,7 +14,7 @@ import sys
 
 
 
-MAX_QUANTITY = 1000
+MAX_QUANTITY = 10000
 MIN_QUANTITY = 1
 
 if getattr(sys, "frozen", False):
@@ -117,11 +117,15 @@ def geodetic():
 
         try:
 
-            quantity = int(request.form.get("quantity", 1))
             action = request.form.get("action")
 
+            if action == "main_menu":
+                return redirect(url_for("main_menu"))   
+
+            quantity = int(request.form.get("quantity", 1))
+
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
-                raise ValueError("La cantidad debe estar entre 1 y 1000")
+                raise ValueError("La cantidad debe estar entre 1 y 10000")
 
 
 
@@ -286,8 +290,12 @@ def utm():
          
         try:
         
-            quantity = int(request.form.get("quantity", 1))
             action = request.form.get("action")
+
+            if action == "main_menu":
+                return redirect(url_for("main_menu"))
+        
+            quantity = int(request.form.get("quantity", 1))
         
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
                 raise ValueError("La cantidad debe estar entre 1 y 1000")
