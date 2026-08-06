@@ -269,52 +269,87 @@
 
 </div>
 
-<!-- Modal de importación CSV / TXT -->
+
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+
   <div class="modal-dialog">
+
     <div class="modal-content">
+
       <form method="POST" action="{{ url_for('utm_import') }}" enctype="multipart/form-data">
+
         <div class="modal-header">
+
           <h5 class="modal-title" id="importModalLabel">Importar coordenadas UTM</h5>
+
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
         </div>
+
         <div class="modal-body">
 
           <div class="mb-3">
+
             <label for="importUTMZone" class="form-label">Zona UTM del archivo</label>
+
             <select class="form-select" id="importUTMZone" name="UTMZone" required>
+
                 <option value="17">17S</option>
+
                 <option value="18">18S</option>
+
                 <option value="19">19S</option>
+
             </select>
+
           </div>
 
           <div class="mb-3">
+
             <label for="importCalculationType" class="form-label">Altura incluida en el archivo</label>
+
             <select class="form-select" id="importCalculationType" name="CalculationType" required>
+
                 <option value="OrthometricHeight">Altura Ortométrica</option>
+
                 <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+
             </select>
+
           </div>
 
           <div class="mb-2">
+
             <label for="importFile" class="form-label">Archivo (.csv o .txt, sin encabezados)</label>
+
             <input class="form-control" type="file" id="importFile" name="file" accept=".csv,.txt" required>
+
           </div>
 
           <p class="text-muted small mb-0">
+
             Columnas esperadas (sin encabezado): N°, Este, Norte, altura.
           </p>
 
+
         </div>
+        
         <div class="modal-footer">
+
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+
           <button type="submit" class="btn btn-primary">Importar</button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 </div>
+
 
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

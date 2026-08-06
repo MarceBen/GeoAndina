@@ -349,55 +349,94 @@
 
 </div>
 
-<!-- Modal de importación CSV / TXT -->
+
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+
   <div class="modal-dialog">
+
     <div class="modal-content">
+
       <form method="POST" action="{{ url_for('geodetic_import') }}" enctype="multipart/form-data">
+
         <div class="modal-header">
+
           <h5 class="modal-title" id="importModalLabel">Importar coordenadas geodésicas</h5>
+
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
         </div>
+
         <div class="modal-body">
 
           <div class="mb-3">
+
             <label for="importCoordinateFormat" class="form-label">Formato de coordenadas en el archivo</label>
+
             <select class="form-select" id="importCoordinateFormat" name="CoordinateFormat" required>
+
                 <option value="DD">Grados Sexagesimales (DD)</option>
+
                 <option value="DM">Grados y Minutos (DM)</option>
+
                 <option value="DMS">Grados, Minutos y Segundos (DMS)</option>
+
             </select>
+
           </div>
 
           <div class="mb-3">
+
             <label for="importCalculationType" class="form-label">Altura incluida en el archivo</label>
+
             <select class="form-select" id="importCalculationType" name="CalculationType" required>
+
                 <option value="OrthometricHeight">Altura Ortométrica</option>
+
                 <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+
             </select>
+
           </div>
 
           <div class="mb-2">
+
             <label for="importFile" class="form-label">Archivo (.csv o .txt, sin encabezados)</label>
+
             <input class="form-control" type="file" id="importFile" name="file" accept=".csv,.txt" required>
+
           </div>
 
+
           <p class="text-muted small mb-0">
+
             Columnas esperadas (sin encabezado), según el formato elegido:<br>
+
             <strong>DD:</strong> N°, latitud, longitud, altura<br>
+
             <strong>DM:</strong> N°, lat. grados, lat. minutos, lon. grados, lon. minutos, altura<br>
+
             <strong>DMS:</strong> N°, lat. grados, lat. minutos, lat. segundos, lon. grados, lon. minutos, lon. segundos, altura
+
           </p>
 
         </div>
+
         <div class="modal-footer">
+
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+
           <button type="submit" class="btn btn-primary">Importar</button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 </div>
+
 
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

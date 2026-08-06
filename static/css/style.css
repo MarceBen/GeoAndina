@@ -15,12 +15,12 @@
     --text-secondary: #a49c8d;
     --text-muted: #6e6a5f;
 
-    /* Cobre andino — acento primario (acción, énfasis) */
+   
     --copper: #c9702f;
     --copper-dark: #a2571f;
     --copper-soft: rgba(201, 112, 47, 0.14);
 
-    /* Verde de curvas de nivel — acento técnico secundario */
+    
     --contour: #6a9c6f;
     --contour-dark: #4f7d54;
 
@@ -29,7 +29,7 @@
 
     --grid-line: rgba(106, 156, 111, 0.05);
 
-    /* Radios casi rectos: precisión, no "app friendly" */
+    
     --radius-lg: 4px;
     --radius-md: 3px;
     --radius-sm: 2px;
@@ -91,8 +91,7 @@ body
     border-color: var(--panel-border-strong);
 }
 
-/* Marcas de esquina tipo plano técnico, solo en la tarjeta
-   principal (la del formulario de cantidad) */
+
 
 .h-100 .card
 {
@@ -358,7 +357,7 @@ h3
     border-color: var(--panel-border-strong);
 }
 
-/* ===== Botones secundarios de navegación (Menu Principal, Cambiar Zona, Importar) ===== */
+
 
 .nav-buttons
 {
@@ -425,7 +424,7 @@ h3
     color: #1a1000;
 }
 
-/* ===== Modal de importación ===== */
+
 
 .modal-content
 {
