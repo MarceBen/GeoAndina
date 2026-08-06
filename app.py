@@ -294,7 +294,10 @@ def utm():
 
             if action == "main_menu":
                 return redirect(url_for("main_menu"))
-        
+
+            if action == "return_utmzone":
+                return redirect(url_for("utm_zone"))
+            
             quantity = int(request.form.get("quantity", 1))
         
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
