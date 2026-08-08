@@ -36,7 +36,12 @@ app.secret_key = SECRET_KEY
 
 # Cargar el modelo una sola vez al iniciar la aplicación
 model = EGModel2008()
-model.load_model()
+@app.route("/initialize")
+def initialize():
+
+    model.load_model()
+
+    return "", 204
 
 
 def normalize_imported_results(raw_results):
@@ -58,7 +63,7 @@ def normalize_imported_results(raw_results):
 
 @app.route("/")
 def home():
-    return redirect(url_for("login"))
+    return render_template("loading.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

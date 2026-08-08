@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>GeoAndina - Cargando Elementos</title>
+</head>
+<body>
+
+    <div class = "container vh-100">
+
+        <div class = "row justify-content-center">
+
+            <div class = "col-lg-7">
+
+                <div class = "card">
+
+                    <div class = "card-body">
+
+                        <div class="loading-content text-center">
+
+                            <div class="app-eyebrow">
+
+                                Sistema de Procesamiento Geodésico
+
+                            </div>
+
+                            <h1 class="mt-2">
+
+                                GeoAndina
+
+                            </h1>
+
+                            <h5 class="text-muted">
+
+                                Modelo Geoidal EGM2008 -  Peru
+
+                            </h5>
+
+                            <hr class="my-4">
+
+                            <p id="loading-message" class="fw-semibold">
+
+                                Inicializando aplicación...
+
+                            </p>
+
+
+                            <div class="spinner-border text-warning mt-3" role="status">
+
+                                <span class="visually-hidden">
+
+                                    Loading...
+
+                                </span>
+
+                            </div>
+
+                            <div class="mt-4">
+
+                                <small class="text-muted d-block">
+
+                                Preparando motor de interpolación...
+
+                                </small>
+
+                            </div>
+
+                            <hr class="mt-5">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <small class="text-muted">
+
+                                    GeoAndina v1.1
+
+                                </small>
+
+                                <small class="text-muted">
+
+                                    © 2026 Marcelo Benites
+
+                                </small>
+
+                            </div>
+
+                            <div class="progress mt-4" style="height:6px;">
+
+                                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+                        
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
+    
+</body>
+</html>
