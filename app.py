@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from egm2008 import EGModel2008
 from calculations import calculate_orthometric_height, dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height
 from utm import utm_to_geodetic
-from imports import parse_geodetic_file, parse_utm_file, allowed_file
+from imports import parse_geodetic_file, parse_utm_file, allowed_file, parse_local_points_file, convert_geodetic_point_to_utm
+from geoidlocalmodel import LocalModel
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -16,6 +17,9 @@ import sys
 
 MAX_QUANTITY = 10000
 MIN_QUANTITY = 1
+
+
+LOCAL_MODEL_K = 4
 
 if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys._MEIPASS)
@@ -34,8 +38,12 @@ app = Flask(__name__)
 
 app.secret_key = SECRET_KEY
 
-# Cargar el modelo una sola vez al iniciar la aplicación
+
 model = EGModel2008()
+
+
+local_model = None
+
 @app.route("/initialize")
 def initialize():
 
@@ -69,7 +77,7 @@ def home():
 def login():
 
     if session.get("Logged") == True:
-        return redirect(url_for("main_menu"))
+        return redirect(url_for("premain_menu"))
 
     if request.method == "GET":
         return render_template("login.html")
@@ -79,11 +87,33 @@ def login():
 
         if password == ACCESS_PASSWORD:
             session["Logged"] = True
-            return redirect(url_for("main_menu"))
+            return redirect(url_for("premain_menu"))
         
         else:
             return render_template("login.html", error = "Contraseña Incorrecta")
 
+
+@app.route("/premain_menu", methods=["GET", "POST"])
+def premain_menu():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+
+    if request.method == "GET":
+        return render_template("premainmenu.html")
+
+    height_model = request.form.get("HeightModel")
+
+    if height_model not in ("EGM2008", "Local"):
+        return render_template("premainmenu.html", error="Seleccione un modelo geoidal válido.")
+
+    session["HeightModel"] = height_model
+
+    if height_model == "Local":
+  
+        return redirect(url_for("utm_zone"))
+
+    return redirect(url_for("main_menu"))
 
 
 @app.route("/main_menu", methods=["GET", "POST"])
@@ -184,7 +214,36 @@ def geodetic():
 
                
 
-                    if calculation_type == "OrthometricHeight":
+                    if session.get("HeightModel") == "Local":
+
+                        if local_model is None:
+                            raise ValueError("Debe importar los puntos del modelo geoidal local antes de calcular")
+
+                        local_zone = session.get("UTMZone")
+
+                        if local_zone is None:
+                            raise ValueError("Debe seleccionar una zona UTM para el modelo local")
+
+                        point_east, point_north = convert_geodetic_point_to_utm(latitude, longitude, local_zone)
+
+                        geoid_height = local_model.calculate_local_geoid(point_east, point_north, LOCAL_MODEL_K)
+
+                        if calculation_type == "OrthometricHeight":
+
+                            ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
+
+                            orthometric_height = ellipsoidal_height - geoid_height
+
+                        elif calculation_type == "EllipsoidalHeight":
+
+                            orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
+
+                            ellipsoidal_height = orthometric_height + geoid_height
+
+                        else:
+                            raise ValueError("Tipo de cálculo no válido")
+
+                    elif calculation_type == "OrthometricHeight":
                                     
                         ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
                                     
@@ -272,12 +331,18 @@ def utm_zone():
 
     if request.method == "POST":
 
+        global local_model
+
         utm_zone = request.form.get("UTMZone")
 
         if utm_zone not in ["17", "18", "19"]:
             return render_template("utm_zone.html", error="Seleccione una zona válida.")
 
         session["UTMZone"] = int(utm_zone)
+
+        if session.get("HeightModel") == "Local":
+            local_model = None
+            return redirect(url_for("local_model_page"))
 
         return redirect(url_for("utm"))
 
@@ -327,8 +392,30 @@ def utm():
 
                             latitude, longitude = utm_to_geodetic(east, north, utm_zone)
                             
-        
-                            if calculation_type == "OrthometricHeight":
+
+                            if session.get("HeightModel") == "Local":
+
+                                if local_model is None:
+                                    raise ValueError("Debe importar los puntos del modelo geoidal local antes de calcular")
+
+                                geoid_height = local_model.calculate_local_geoid(east, north, LOCAL_MODEL_K)
+
+                                if calculation_type == "OrthometricHeight":
+
+                                    ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
+
+                                    orthometric_height = ellipsoidal_height - geoid_height
+
+                                elif calculation_type == "EllipsoidalHeight":
+
+                                    orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
+
+                                    ellipsoidal_height = orthometric_height + geoid_height
+
+                                else:
+                                    raise ValueError("Tipo de cálculo no válido")
+
+                            elif calculation_type == "OrthometricHeight":
                                             
                                 ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
                                             
@@ -410,6 +497,64 @@ def utm_import():
         return render_template(
             "utm.html", quantity=None, results=None,
             error="Ocurrio un error inesperado al importar el archivo"
+        )
+
+
+@app.route("/local_model", methods=["GET"])
+def local_model_page():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+
+    point_count = len(local_model.points) if local_model is not None else None
+
+    return render_template("local_model.html", point_count=point_count)
+
+
+@app.route("/local_model/import", methods=["POST"])
+def local_model_import():
+
+    if session.get("Logged") != True:
+        return redirect(url_for("login"))
+
+    global local_model
+
+    try:
+
+        uploaded_file = request.files.get("file")
+        coordinate_system = request.form.get("CoordinateSystem")
+        coordinate_order = request.form.get("CoordinateOrder")
+        utm_zone_value = session.get("UTMZone")
+
+        if not uploaded_file or uploaded_file.filename == "":
+            raise ValueError("Debe seleccionar un archivo para importar")
+
+        if not allowed_file(uploaded_file.filename):
+            raise ValueError("Formato de archivo no soportado. Use .csv o .txt")
+
+        if utm_zone_value is None:
+            raise ValueError("Debe seleccionar una zona UTM antes de importar los puntos")
+
+        points = parse_local_points_file(
+            uploaded_file, coordinate_system, coordinate_order, utm_zone_value,
+            MIN_QUANTITY, MAX_QUANTITY
+        )
+
+        new_local_model = LocalModel(points)
+        new_local_model.buildkd_tree()
+        new_local_model.calculate_points_geoid(utm_zone_value)
+
+        local_model = new_local_model
+
+        return render_template("local_model.html", point_count=len(points))
+
+    except ValueError as e:
+        return render_template("local_model.html", point_count=None, error=str(e))
+
+    except Exception:
+        return render_template(
+            "local_model.html", point_count=None,
+            error="Ocurrio un error inesperado al importar los puntos del modelo local"
         )
 
 
