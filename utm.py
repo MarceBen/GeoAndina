@@ -16,6 +16,16 @@ def utm_to_geodetic(east, north, utm_zone):
 
     return latitude, longitude
 
+def geodetic_to_utm(longitude, latitude, utm_zone):
+
+    destination_epsg = BASE_EPSG + utm_zone
+
+    transformer = Transformer.from_crs(DESTINATION_EPSG, destination_epsg, always_xy=True)
+
+    east, north = transformer.transform(longitude, latitude)
+
+    return east, north
+
     
 
 
