@@ -220,7 +220,7 @@ class LocalModel(EGModel2008):
 
         if calculation_type == "OrthometricHeight":
 
-            rthometric_height = height
+            orthometric_height = height
             ellipsoidal_height = height + geoid_height
 
         elif calculation_type == "EllipsoidalHeight":
@@ -246,21 +246,3 @@ class LocalModel(EGModel2008):
             "OrthometricHeight": orthometric_height,
             "EllipsoidalHeight": ellipsoidal_height
         }
-
-
-
-
-
-
-
-
-        
-
-            
-
-        
-
-
-    
-
-    
