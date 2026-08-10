@@ -39,7 +39,7 @@ function updateCard(inputCard)
         }
     }
 
-    // Tipo de cálculo (existe tanto en geodetic.html como en utm.html)
+  
     if (calculationType)
     {
         if (calculationType.value === "OrthometricHeight")
@@ -79,3 +79,112 @@ inputCard.forEach(card => {
     }
 
 });
+
+
+
+
+function createProcessingOverlay()
+{
+    const overlay = document.createElement("div");
+    overlay.className = "processing-overlay";
+    overlay.id = "processingOverlay";
+
+    overlay.innerHTML = `
+        <div class="processing-spinner"></div>
+        <p class="processing-eyebrow">GeoAndina</p>
+        <p class="processing-text" id="processingText">Procesando...</p>
+    `;
+
+    document.body.appendChild(overlay);
+
+    return overlay;
+}
+
+function showProcessingOverlay(message)
+{
+    let overlay = document.getElementById("processingOverlay");
+
+    if (!overlay)
+    {
+        overlay = createProcessingOverlay();
+    }
+
+    const textEl = document.getElementById("processingText");
+
+    if (textEl && message)
+    {
+        textEl.textContent = message;
+    }
+
+    overlay.classList.add("active");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document.querySelectorAll("form").forEach(form => {
+
+        form.addEventListener("submit", (event) => {
+
+            const submitter = event.submitter;
+
+            if (!submitter)
+            {
+                return;
+            }
+
+         
+            if (submitter.value === "generate")
+            {
+                return;
+            }
+
+            // Botones de navegación, son solo redirects
+            if (submitter.value === "main_menu" || submitter.value === "return_utmzone")
+            {
+                return;
+            }
+
+            if (submitter.value === "calculate")
+            {
+                showProcessingOverlay("Calculando alturas geodésicas...");
+            }
+            else if (submitter.value === "build")
+            {
+                showProcessingOverlay("Construyendo modelo geoidal local...");
+            }
+            else if (form.enctype === "multipart/form-data")
+            {
+                showProcessingOverlay("Importando y calculando...");
+            }
+
+        });
+
+    });
+
+});
+
+
+
+
+const coordinateSystemSelect = document.getElementById("CoordinateSystem");
+
+if (coordinateSystemSelect)
+{
+    const coordinateOrderField = document.getElementById("coordinateOrderField");
+
+    function updateLocalModelFields()
+    {
+        if (coordinateSystemSelect.value === "UTM")
+        {
+            coordinateOrderField.classList.remove("d-none");
+        }
+        else if (coordinateSystemSelect.value === "Geodetic")
+        {
+            coordinateOrderField.classList.add("d-none");
+        }
+    }
+
+    updateLocalModelFields();
+
+    coordinateSystemSelect.addEventListener("change", updateLocalModelFields);
+}
