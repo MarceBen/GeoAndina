@@ -273,7 +273,7 @@ def geodetic():
                 raise ValueError("Accion Invalida")   
 
         except ValueError as e:
-            return render_template("geodetic.html", quantity = quantity, results = results, error = str(e))
+            return render_template("geodetic.html", quantity = 1, results = results, error = str(e))
 
         except Exception as e:
             return render_template("geodetic.html", quantity = quantity, results = results, error = "Ocurrio un error inesperado")
@@ -406,7 +406,7 @@ def utm():
             quantity = int(request.form.get("quantity", 1))
         
             if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
-                raise ValueError("La cantidad debe estar entre 1 y 1000")
+                raise ValueError("La cantidad debe estar entre 1 y 10000")
         
             if action  == "generate":
         
@@ -483,7 +483,7 @@ def utm():
                 raise ValueError("Accion Invalida")   
         
         except ValueError as e:
-                    return render_template("utm.html", quantity = quantity, results = results, error = str(e))
+                    return render_template("utm.html", quantity = 1, results = results, error = str(e))
         
         except Exception as e:
             return render_template("utm.html", quantity = quantity, results = results, error = "Ocurrio un error inesperado")
@@ -630,7 +630,7 @@ def local_model_page():
                 raise ValueError("Accion Invalida")
 
         except ValueError as e:
-            return render_template("local_model.html", quantity=quantity, point_count=point_count, error=str(e))
+            return render_template("local_model.html", quantity = 1, point_count=point_count, error=str(e))
 
         except Exception:
             return render_template("local_model.html", quantity=quantity, point_count=point_count, error="Ocurrio un error inesperado")
