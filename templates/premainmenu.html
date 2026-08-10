@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>GeoAndina v1.1</title>
+</head>
+<body>
+
+    <div class = "container vh-100">
+
+        <div class = "row justify-content-center align-items-center h-100">
+
+            <div class = "col-lg-7">
+
+                <div class = "card">
+
+                    <div class="card-body">
+
+                        <div class = "text-center">
+
+                            <h1 class = "my-3">GeoAndina v1.1</h1>
+                            <p class = "text-muted mb-4"><strong>Seleccione el modelo geoidal con el que desea trabajar.</strong></p>
+
+                        </div>
+
+                        {% if error %}
+
+                            <p class = "text-danger text-center mt-3"><strong>
+
+                                {{ error }}
+
+                            </strong></p>
+
+                        {% endif %}
+
+                        <form method="POST" class = "d-grid gap-3">
+
+                            <div class = "row justify-content-center align-items-center">
+
+                                <div class = "col-4">
+
+                                    <button class = "btn btn-primary btn-lg mb-3" type="submit" value = "EGM2008" name = "HeightModel">
+                                        Modelo EGM2008
+                                    </button>
+
+                                    <button class = "btn btn-success btn-lg" type="submit" value = "Local" name = "HeightModel">
+                                        Modelo Geoidal Local
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
