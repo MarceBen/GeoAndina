@@ -1,5 +1,6 @@
 import csv
 from calculations import dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height, calculate_orthometric_height
+from utm import geodetic_to_utm
 from utm import utm_to_geodetic
 
 ALLOWED_EXTENSIONS = {"csv", "txt"}
@@ -248,11 +249,9 @@ def parse_local_point_row(row, coordinate_system, coordinate_order):
 
 def convert_geodetic_point_to_utm(latitude, longitude, utm_zone):
 
-   
+    
 
-    from utm import geodetic_to_utm
-
-    east, north = geodetic_to_utm(latitude, longitude, utm_zone)
+    east, north = geodetic_to_utm(longitude, latitude, utm_zone)
 
     return east, north
 
