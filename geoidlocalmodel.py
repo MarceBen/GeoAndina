@@ -220,13 +220,13 @@ class LocalModel(EGModel2008):
 
         if calculation_type == "OrthometricHeight":
 
-            orthometric_height = height
-            ellipsoidal_height = height + geoid_height
+            ellipsoidal_height = height
+            orthometric_height = height - geoid_height
 
         elif calculation_type == "EllipsoidalHeight":
 
-            ellipsoidal_height = height
-            orthometric_height = height - geoid_height
+            orthometric_height = height
+            ellipsoidal_height = height + geoid_height
 
         else:
             raise ValueError("Tipo de calculo inválido.")

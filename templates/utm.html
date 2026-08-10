@@ -32,9 +32,9 @@
                             Importar CSV / TXT
                         </button>
 
-                        <button type="button" class="secondary-btn" onclick="window.location.href='{{ url_for('premain_menu') }}'">
+                        <a href="{{ url_for('premain_menu') }}" class="secondary-btn">
                             Cambiar Modelo
-                        </button>
+                        </a>
 
                         <button class = "secondary-btn" value = "return_utmzone" name = "action" type = "submit" form="quantityForm" formnovalidate>
                             Cambiar Zona

@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from egm2008 import EGModel2008
 from calculations import calculate_orthometric_height, dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height
 from utm import utm_to_geodetic
-from imports import parse_geodetic_file, parse_utm_file, allowed_file, parse_local_points_file, convert_geodetic_point_to_utm
+from imports import parse_geodetic_file, parse_utm_file, allowed_file, parse_local_points_file, convert_geodetic_point_to_utm, read_rows, parse_geodetic_row, parse_utm_row
 from geoidlocalmodel import LocalModel
 from dotenv import load_dotenv
 from pathlib import Path
@@ -299,9 +299,42 @@ def geodetic_import():
         if not allowed_file(uploaded_file.filename):
             raise ValueError("Formato de archivo no soportado. Use .csv o .txt")
 
-        raw_results = parse_geodetic_file(uploaded_file, model, coordinate_format, calculation_type)
+        if session.get("HeightModel") == "Local":
 
-        results = normalize_imported_results(raw_results)
+            if local_model is None:
+                raise ValueError("Debe importar o construir los puntos del modelo geoidal local antes de calcular")
+
+            local_zone = session.get("UTMZone")
+
+            if local_zone is None:
+                raise ValueError("Debe seleccionar una zona UTM para el modelo local")
+
+            rows = read_rows(uploaded_file)
+
+            results = []
+
+            for row in rows:
+
+                number, latitude, longitude, height = parse_geodetic_row(row, coordinate_format)
+
+                point_east, point_north = convert_geodetic_point_to_utm(latitude, longitude, local_zone)
+
+                local_result = local_model.calculate_result(point_east, point_north, height, calculation_type, LOCAL_MODEL_K)
+
+                results.append({
+                    "PointNumber": number,
+                    "CalculationType": calculation_type,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "orthometric_height": float(local_result["OrthometricHeight"]),
+                    "ellipsoidal_height": float(local_result["EllipsoidalHeight"]),
+                })
+
+        else:
+
+            raw_results = parse_geodetic_file(uploaded_file, model, coordinate_format, calculation_type)
+
+            results = normalize_imported_results(raw_results)
 
         return render_template("geodetic.html", quantity=len(results), results=results)
 
@@ -333,11 +366,18 @@ def utm_zone():
         if utm_zone not in ["17", "18", "19"]:
             return render_template("utm_zone.html", error="Seleccione una zona válida.")
 
+        previous_zone = session.get("UTMZone")
+        zone_changed = previous_zone != int(utm_zone)
+
         session["UTMZone"] = int(utm_zone)
 
         if session.get("HeightModel") == "Local":
-            local_model = None
-            return redirect(url_for("local_model_page"))
+
+            if local_model is None or zone_changed:
+                local_model = None
+                return redirect(url_for("local_model_page"))
+
+            return redirect(url_for("utm"))
 
         return redirect(url_for("utm"))
 
@@ -469,14 +509,47 @@ def utm_import():
         if not allowed_file(uploaded_file.filename):
             raise ValueError("Formato de archivo no soportado. Use .csv o .txt")
 
-        if utm_zone_value not in ["17", "18", "19"]:
-            raise ValueError("Seleccione una zona UTM válida")
+        if session.get("HeightModel") == "Local":
 
-        session["UTMZone"] = int(utm_zone_value)
+            if local_model is None:
+                raise ValueError("Debe importar o construir los puntos del modelo geoidal local antes de calcular")
 
-        raw_results = parse_utm_file(uploaded_file, model, session["UTMZone"], calculation_type)
+            local_zone = session.get("UTMZone")
 
-        results = normalize_imported_results(raw_results)
+            if local_zone is None:
+                raise ValueError("Debe seleccionar una zona UTM para el modelo local")
+
+            rows = read_rows(uploaded_file)
+
+            results = []
+
+            for row in rows:
+
+                number, east, north, height = parse_utm_row(row)
+
+                latitude, longitude = utm_to_geodetic(east, north, local_zone)
+
+                local_result = local_model.calculate_result(east, north, height, calculation_type, LOCAL_MODEL_K)
+
+                results.append({
+                    "PointNumber": number,
+                    "CalculationType": calculation_type,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "orthometric_height": float(local_result["OrthometricHeight"]),
+                    "ellipsoidal_height": float(local_result["EllipsoidalHeight"]),
+                })
+
+        else:
+
+            if utm_zone_value not in ["17", "18", "19"]:
+                raise ValueError("Seleccione una zona UTM válida")
+
+            session["UTMZone"] = int(utm_zone_value)
+
+            raw_results = parse_utm_file(uploaded_file, model, session["UTMZone"], calculation_type)
+
+            results = normalize_imported_results(raw_results)
 
         return render_template("utm.html", quantity=len(results), results=results)
 
@@ -545,6 +618,7 @@ def local_model_page():
                     })
 
                 new_local_model = LocalModel(points)
+                new_local_model.vertices = model.vertices
                 new_local_model.buildkd_tree()
                 new_local_model.calculate_points_geoid(utm_zone_value)
 
@@ -594,6 +668,7 @@ def local_model_import():
         )
 
         new_local_model = LocalModel(points)
+        new_local_model.vertices = model.vertices
         new_local_model.buildkd_tree()
         new_local_model.calculate_points_geoid(utm_zone_value)
 

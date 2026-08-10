@@ -28,17 +28,17 @@
 
                     <div class = "nav-buttons">
 
-                        <button type="button" class="secondary-btn" onclick="window.location.href='{{ url_for('premain_menu') }}'">
+                        <a href="{{ url_for('premain_menu') }}" class="secondary-btn">
                             Cambiar Modelo
-                        </button>
+                        </a>
 
-                        <button type="button" class="secondary-btn" onclick="window.location.href='{{ url_for('utm_zone') }}'">
+                        <a href="{{ url_for('utm_zone') }}" class="secondary-btn">
                             Cambiar Zona
-                        </button>
+                        </a>
 
-                        <button type="button" class="secondary-btn" onclick="window.location.href='{{ url_for('main_menu') }}'">
+                        <a href="{{ url_for('main_menu') }}" class="secondary-btn">
                             Menu Principal
-                        </button>
+                        </a>
 
                     </div>
 
