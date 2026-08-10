@@ -100,12 +100,12 @@ def premain_menu():
         return redirect(url_for("login"))
 
     if request.method == "GET":
-        return render_template("premainmenu.html")
+        return render_template("premain_menu.html")
 
     height_model = request.form.get("HeightModel")
 
     if height_model not in ("EGM2008", "Local"):
-        return render_template("premainmenu.html", error="Seleccione un modelo geoidal válido.")
+        return render_template("premain_menu.html", error="Seleccione un modelo geoidal válido.")
 
     session["HeightModel"] = height_model
 
@@ -217,7 +217,7 @@ def geodetic():
                     if session.get("HeightModel") == "Local":
 
                         if local_model is None:
-                            raise ValueError("Debe importar los puntos del modelo geoidal local antes de calcular")
+                            raise ValueError("Debe importar o construir los puntos del modelo geoidal local antes de calcular")
 
                         local_zone = session.get("UTMZone")
 
@@ -226,22 +226,17 @@ def geodetic():
 
                         point_east, point_north = convert_geodetic_point_to_utm(latitude, longitude, local_zone)
 
-                        geoid_height = local_model.calculate_local_geoid(point_east, point_north, LOCAL_MODEL_K)
-
                         if calculation_type == "OrthometricHeight":
-
-                            ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
-
-                            orthometric_height = ellipsoidal_height - geoid_height
-
+                            height_value = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
                         elif calculation_type == "EllipsoidalHeight":
-
-                            orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
-
-                            ellipsoidal_height = orthometric_height + geoid_height
-
+                            height_value = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
                         else:
                             raise ValueError("Tipo de cálculo no válido")
+
+                        local_result = local_model.calculate_result(point_east, point_north, height_value, calculation_type, LOCAL_MODEL_K)
+
+                        orthometric_height = local_result["OrthometricHeight"]
+                        ellipsoidal_height = local_result["EllipsoidalHeight"]
 
                     elif calculation_type == "OrthometricHeight":
                                     
@@ -396,24 +391,19 @@ def utm():
                             if session.get("HeightModel") == "Local":
 
                                 if local_model is None:
-                                    raise ValueError("Debe importar los puntos del modelo geoidal local antes de calcular")
-
-                                geoid_height = local_model.calculate_local_geoid(east, north, LOCAL_MODEL_K)
+                                    raise ValueError("Debe importar o construir los puntos del modelo geoidal local antes de calcular")
 
                                 if calculation_type == "OrthometricHeight":
-
-                                    ellipsoidal_height = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
-
-                                    orthometric_height = ellipsoidal_height - geoid_height
-
+                                    height_value = float(request.form.get(f"EllipsoidalHeight_{i}", 0 ))
                                 elif calculation_type == "EllipsoidalHeight":
-
-                                    orthometric_height = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
-
-                                    ellipsoidal_height = orthometric_height + geoid_height
-
+                                    height_value = float(request.form.get(f"OrthometricHeight_{i}", 0 ))
                                 else:
                                     raise ValueError("Tipo de cálculo no válido")
+
+                                local_result = local_model.calculate_result(east, north, height_value, calculation_type, LOCAL_MODEL_K)
+
+                                orthometric_height = local_result["OrthometricHeight"]
+                                ellipsoidal_height = local_result["EllipsoidalHeight"]
 
                             elif calculation_type == "OrthometricHeight":
                                             
@@ -500,15 +490,78 @@ def utm_import():
         )
 
 
-@app.route("/local_model", methods=["GET"])
+@app.route("/local_model", methods=["GET", "POST"])
 def local_model_page():
 
     if session.get("Logged") != True:
         return redirect(url_for("login"))
 
+    global local_model
+
+    quantity = None
     point_count = len(local_model.points) if local_model is not None else None
 
-    return render_template("local_model.html", point_count=point_count)
+    if request.method == "POST":
+
+        try:
+
+            action = request.form.get("action")
+
+            if action == "main_menu":
+                return redirect(url_for("main_menu"))
+
+            if action == "return_utmzone":
+                return redirect(url_for("utm_zone"))
+
+            quantity = int(request.form.get("quantity", 1))
+
+            if quantity > MAX_QUANTITY or quantity < MIN_QUANTITY:
+                raise ValueError("La cantidad debe estar entre 1 y 10000")
+
+            if action == "generate":
+
+                return render_template("local_model.html", quantity=quantity, point_count=point_count)
+
+            elif action == "build":
+
+                utm_zone_value = session.get("UTMZone")
+
+                if utm_zone_value is None:
+                    raise ValueError("Debe seleccionar una zona UTM antes de construir el modelo local")
+
+                points = []
+
+                for i in range(quantity):
+
+                    east = float(request.form.get(f"East_{i}", 0))
+                    north = float(request.form.get(f"North_{i}", 0))
+                    height = float(request.form.get(f"Height_{i}", 0))
+
+                    points.append({
+                        "Number": i + 1,
+                        "East": east,
+                        "North": north,
+                        "Height": height
+                    })
+
+                new_local_model = LocalModel(points)
+                new_local_model.buildkd_tree()
+                new_local_model.calculate_points_geoid(utm_zone_value)
+
+                local_model = new_local_model
+
+                return render_template("local_model.html", quantity=None, point_count=len(points))
+
+            else:
+                raise ValueError("Accion Invalida")
+
+        except ValueError as e:
+            return render_template("local_model.html", quantity=quantity, point_count=point_count, error=str(e))
+
+        except Exception:
+            return render_template("local_model.html", quantity=quantity, point_count=point_count, error="Ocurrio un error inesperado")
+
+    return render_template("local_model.html", quantity=quantity, point_count=point_count)
 
 
 @app.route("/local_model/import", methods=["POST"])
