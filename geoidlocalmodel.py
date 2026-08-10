@@ -164,7 +164,12 @@ class LocalModel(EGModel2008):
             error_y = north - y
 
             if abs(error_x) < 0.000001 and abs(error_y) < 0.000001:
-                return u, v
+                 
+                if 0 <= u <= 1 and 0 <= v <= 1:
+
+                    return u, v
+
+                raise ValueError("El punto se encuentra fuera de la grilla")
 
             dx_du = ((se["East"] - sw["East"]) * (1-v) + (ne["East"] - nw["East"]) * v)
 

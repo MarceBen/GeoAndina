@@ -37,6 +37,9 @@ def read_rows(file):
 
         rows.append(row)
 
+    if not rows:
+        raise ValueError("El archivo esta vacio o no tiene un formato valido")
+
     return rows
 
 
