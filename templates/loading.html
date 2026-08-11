@@ -8,105 +8,121 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>GeoAndina - Cargando Elementos</title>
+    <title>GeoAndina - Iniciando</title>
 </head>
 <body>
 
-    <div class = "container vh-100">
+   <div class="loading-screen">
 
-        <div class = "row justify-content-center align-items-center h-100">
+    
+    <div class="loading-grid"></div>
+    <div class="loading-scan"></div>
 
-            <div class = "col-lg-7">
+    <div class="contour contour-1"></div>
+    <div class="contour contour-2"></div>
+    <div class="contour contour-3"></div>
+    <div class="contour contour-4"></div>
 
-                <div class = "card">
+   
+    <div class="geo-point point-1"></div>
+    <div class="geo-point point-2"></div>
+    <div class="geo-point point-3"></div>
 
-                    <div class = "card-body">
+    <div class="loading-container">
 
-                        <div class="loading-content text-center">
+        <div class="loading-panel">
 
-                            <div class="app-eyebrow">
+            <div class="loading-top">
 
-                                Sistema de Procesamiento Geodésico
+                <div class="app-eyebrow">
+                    SISTEMA DE PROCESAMIENTO GEODÉSICO
+                </div>
 
-                            </div>
+                <div class="system-status">
+                    <span class="status-dot"></span>
+                    SISTEMA EN INICIALIZACIÓN
+                </div>
 
-                            <h1 class="mt-2">
-
-                                GeoAndina
-
-                            </h1>
-
-                            <h5 class="text-muted">
-
-                                Modelo Geoidal EGM2008 -  Peru
-
-                            </h5>
-
-                            <hr class="my-4">
-
-                            <p id="loading-message" class="fw-semibold">
-
-                                Inicializando aplicación...
-
-                            </p>
+            </div>
 
 
-                            <div class="spinner-border text-warning mt-3" role="status">
+            <div class="loading-brand">
 
-                                <span class="visually-hidden">
+                <div class="brand-mark">
+                    GA
+                </div>
 
-                                    Loading...
+                <h1>
+                    GeoAndina
+                </h1>
 
-                                </span>
+                <div class="brand-line"></div>
 
-                            </div>
+                <p class="brand-subtitle">
+                    MODELO GEOIDAL EGM2008
+                </p>
 
-                            <div class="mt-4">
+                <p class="brand-country">
+                    PERÚ
+                </p>
 
-                                <small class="text-muted d-block">
-
-                                Preparando motor de interpolación...
-
-                                </small>
-
-                            </div>
-
-                            <hr class="mt-5">
-
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <small class="text-muted">
-
-                                    GeoAndina v1.1
-
-                                </small>
-
-                                <small class="text-muted">
-
-                                    © 2026 Marcelo Benites
-
-                                </small>
-
-                            </div>
-
-                            <div class="progress mt-4" style="height:6px;">
-
-                                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">
-
-                                </div>
-
-                            </div>
+            </div>
 
 
+            <div class="loading-data">
 
-                        </div>
+                <div class="data-line">
+                    <span>DATUM</span>
+                    <strong>EGM2008</strong>
+                </div>
 
-                        
+                <div class="data-line">
+                    <span>COORDENADAS</span>
+                    <strong>UTM / GEODÉSICAS</strong>
+                </div>
 
+                <div class="data-line">
+                    <span>MOTOR</span>
+                    <strong>INTERPOLACIÓN GEOIDAL</strong>
+                </div>
+
+            </div>
+
+
+            <div class="loading-progress-section">
+
+                <div class="loading-progress-header">
+
+                    <span id="loading-message">
+                        Inicializando aplicación...
+                    </span>
+
+                    <span id="loading-percentage">
+                        0%
+                    </span>
+
+                </div>
+
+                <div class="loading-progress">
+
+                    <div id="progress-bar"
+                         class="loading-progress-bar">
                     </div>
 
                 </div>
 
+            </div>
+
+
+            <div class="loading-footer">
+
+                <div>
+                    GeoAndina v1.1
+                </div>
+
+                <div>
+                    © 2026 Marcelo Benites
+                </div>
 
             </div>
 
@@ -114,6 +130,7 @@
 
     </div>
 
+</div>
     <script src="{{ url_for('static', filename='js/loading.js') }}"></script>
     
 </body>
