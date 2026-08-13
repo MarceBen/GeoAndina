@@ -12,6 +12,8 @@ import threading
 import webview
 import time
 import sys
+from verifier import load_embedded_public_key, verify_license_file
+from machine_id import get_machine_id
 
 
 
@@ -37,6 +39,33 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 app = Flask(__name__)
 
 app.secret_key = SECRET_KEY
+
+def verify_geoandina_license():
+    license_path = BASE_DIR / "GeoAndina.lic"
+    public_key_path = BASE_DIR / "geoandina_public_key.pem"
+
+    if not license_path.exists():
+        return False, "No se encontró el archivo de licencia."
+
+    if not public_key_path.exists():
+        return False, "No se encontró la clave pública."
+
+    try:
+        public_key = load_embedded_public_key(
+            public_key_path.read_bytes()
+        )
+
+        current_machine_id = get_machine_id()
+
+        return verify_license_file(
+            license_path,
+            public_key,
+            current_machine_id,
+            expected_product="GeoAndina"
+        )
+
+    except Exception as exc:
+        return False, f"No se pudo verificar la licencia: {exc}"
 
 
 model = EGModel2008()
@@ -691,6 +720,12 @@ def run_flask():
         
 if __name__ == "__main__":
 
+    valid, message = verify_geoandina_license()
+    if not valid:
+        print(f"\nERROR DE LICENCIA: {message}")
+        input("\nPresione ENTER para cerrar...")
+        sys.exit(1)
+        
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True
     flask_thread.start()
