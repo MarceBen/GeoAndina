@@ -14,7 +14,7 @@ EXPECTED_PRODUCT = "GeoAndina"
 
 
 def canonical_bytes(data: dict[str, Any]) -> bytes:
-    # DEBE ser idéntico al usado en license_generator.canonical_bytes
+   
     return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 

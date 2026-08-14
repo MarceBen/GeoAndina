@@ -197,69 +197,35 @@ def parse_utm_file(file, model, utm_zone, calculation_type):
 
     return results
 
-def parse_local_point_row(row, coordinate_system, coordinate_order):
+def parse_local_point_row(row):
 
     number = row[0]
 
-    if coordinate_system == "UTM":
+    if len(row) != 5:
+        raise ValueError("El formato debe ser Punto, Este, Norte, Altura elipsoidal, Altura ortométrica")
 
-        if len(row) != 4:
-            raise ValueError("El formato debe ser Punto, Este, Norte, H o Punto, Norte, Este, H")
+    try:
 
-        try:
+        east = float(row[1])
+        north = float(row[2])
+        ellipsoidal_height = float(row[3])
+        orthometric_height = float(row[4])
 
-            value_1 = float(row[1])
-            value_2 = float(row[2])
-            height = float(row[3])
+    except ValueError:
+        raise ValueError(f"Error en el punto {number}")
 
-        except ValueError:
-            raise ValueError(f"Error en el punto {number}")
-
-        if coordinate_order == "EN":
-
-            east = value_1
-            north = value_2
-
-        elif coordinate_order == "NE":
-
-            north = value_1
-            east = value_2
-
-        else:
-            raise ValueError("Orden de coordenadas inválido.")
-
-        return number, east, north, height
-
-    elif coordinate_system == "Geodetic":
-
-        if len(row) != 4:
-            raise ValueError("El formato debe ser Punto, Latitud, Longitud, H")
-
-        try:
-
-            latitude = float(row[1])
-            longitude = float(row[2])
-            height = float(row[3])
-
-        except ValueError:
-            raise ValueError(f"Error en el punto {number}")
-
-        return number, latitude, longitude, height
-
-    else:
-        raise ValueError("Sistema de coordenadas inválido.")
+    return number, east, north, ellipsoidal_height, orthometric_height
 
 
 def convert_geodetic_point_to_utm(latitude, longitude, utm_zone):
 
-    
 
     east, north = geodetic_to_utm(longitude, latitude, utm_zone)
 
     return east, north
 
 
-def parse_local_points_file(file, coordinate_system, coordinate_order, utm_zone, min_points, max_points):
+def parse_local_points_file(file, min_points, max_points):
 
     rows = read_rows(file)
 
@@ -273,21 +239,7 @@ def parse_local_points_file(file, coordinate_system, coordinate_order, utm_zone,
 
     for row in rows:
 
-        if coordinate_system == "UTM":
-
-            number, east, north, height = parse_local_point_row(row, coordinate_system, coordinate_order)
-
-        elif coordinate_system == "Geodetic":
-
-            number, latitude, longitude, height = parse_local_point_row(row, coordinate_system, coordinate_order)
-
-            if utm_zone is None:
-                raise ValueError("Debe especificar la zona UTM para convertir coordenadas geodésicas")
-
-            east, north = convert_geodetic_point_to_utm(latitude, longitude, utm_zone)
-
-        else:
-            raise ValueError("Sistema de coordenadas inválido.")
+        number, east, north, ellipsoidal_height, orthometric_height = parse_local_point_row(row)
 
         points.append({
 
@@ -297,7 +249,9 @@ def parse_local_points_file(file, coordinate_system, coordinate_order, utm_zone,
 
             "North": north,
 
-            "Height": height
+            "EllipsoidalHeight": ellipsoidal_height,
+
+            "OrthometricHeight": orthometric_height
         })
 
     return points

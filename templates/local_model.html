@@ -26,6 +26,12 @@
 
                 <div class="card-body">
 
+                    <div class="d-flex justify-content-end mb-2">
+                        <span class="badge {{ 'bg-primary' if session.get('HeightModel') == 'EGM2008' else 'bg-success' }}">
+                            MODELO: {{ 'EGM2008' if session.get('HeightModel') == 'EGM2008' else 'LOCAL' }}
+                        </span>
+                    </div>
+
                     <div class = "nav-buttons">
 
                         <a href="{{ url_for('premain_menu') }}" class="secondary-btn">
@@ -53,35 +59,9 @@
 
                     <form method="POST" action="{{ url_for('local_model_import') }}" enctype="multipart/form-data" id="importForm">
 
-                        <p class="text-center text-muted small mb-2"><strong>Opción 1: importar desde archivo</strong></p>
+                        <p class="text-center text-muted small mb-2"><strong>Importar puntos de control</strong></p>
 
                         <div class="row g-3">
-
-                            <div class="col-md-6">
-
-                                <label for="CoordinateSystem">Sistema de coordenadas del archivo</label>
-
-                                <select class="form-select" id="CoordinateSystem" name="CoordinateSystem" required>
-                                    <option value="UTM">UTM (Este / Norte)</option>
-                                    <option value="Geodetic">Geodésicas (Latitud / Longitud)</option>
-                                </select>
-
-                            </div>
-
-                            <div class="col-md-6" id="coordinateOrderField">
-
-                                <label for="CoordinateOrder">Orden de columnas</label>
-
-                                <select class="form-select" id="CoordinateOrder" name="CoordinateOrder">
-                                    <option value="EN">Punto, Este, Norte, H</option>
-                                    <option value="NE">Punto, Norte, Este, H</option>
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                        <div class="row g-3 mt-1">
 
                             <div class="col-md-8 mx-auto">
 
@@ -94,8 +74,8 @@
                         </div>
 
                         <p class="text-muted small text-center mt-3 mb-0">
-                            UTM: N°, Este, Norte, H o N°, Norte, Este, H (según el orden elegido).<br>
-                            Geodésicas: N°, Latitud, Longitud, H — se convierten a Este/Norte con la zona indicada arriba.
+                            Columnas esperadas (sin encabezado, siempre en UTM):<br>
+                            N°, Este, Norte, Altura elipsoidal, Altura ortométrica
                         </p>
 
                         <div class = "text-center">
@@ -104,33 +84,6 @@
                                 Importar puntos
                             </button>
 
-                        </div>
-
-                    </form>
-
-                    <hr class="my-4">
-
-                    <p class="text-center text-muted small mb-2"><strong>Opción 2: ingresar puntos manualmente</strong></p>
-
-                    <form method="POST" id="quantityForm">
-
-                        <div class = "row">
-
-                            <div class = "col-md-4 mx-auto mt-2">
-
-                                <label for="quantity">Puntos a generar:</label>
-
-                                <input type="number" id="quantity" name="quantity" step="1" class = "form-control" min="1" required>
-
-                            </div>
-
-                        </div>
-
-                        <div class = "text-center">
-
-                            <button type="submit" name = "action" value = "generate" class = "btn btn-primary mt-3 px-4">
-                                Generar
-                            </button>
                         </div>
 
                     </form>
@@ -150,77 +103,6 @@
             {{ error }}
 
         </strong></p>
-
-    {% endif %}
-
-    {% if quantity %}
-
-    <div class = "text-center">
-
-        <h2 class = "my-2">Ingreso manual de puntos</h2>
-        <p class = "my-2">Complete Este, Norte y Altura de cada punto.</p>
-
-    </div>
-
-        <form method="POST">
-
-            <input type="hidden" name="quantity" value="{{ quantity }}">
-
-            {% for i in range(quantity) %}
-
-                <div class = "card my-3">
-
-                    <div class = "card-body coordinate-card">
-
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <p class="mb-0"><strong>Punto {{ i + 1 }}</strong></p>
-                        </div>
-
-                        <div class="row g-3">
-
-                            <div class="col-md-4">
-
-                                <label for="East_{{ i }}">Este (m)</label>
-
-                                <input type = "number" class = "form-control" id = "East_{{ i }}" name = "East_{{ i }}" step = "any">
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <label for = "North_{{ i }}">Norte (m)</label>
-
-                                <input type = "number" class = "form-control" id = "North_{{ i }}" name = "North_{{ i }}" step = "any">
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <label for = "Height_{{ i }}">Altura (H)</label>
-
-                                <input type = "number" class = "form-control" id = "Height_{{ i }}" name = "Height_{{ i }}" step = "any">
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-            <div class = "text-center">
-
-                <button class = "btn btn-primary mt-3 px-4" type = "submit" name = "action" value = "build">
-
-                    Construir Modelo
-
-                </button>
-
-            </div>
-
-        </form>
 
     {% endif %}
 
