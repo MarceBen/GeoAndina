@@ -18,10 +18,10 @@ from machine_id import get_machine_id
 
 
 MAX_QUANTITY = 10000
-MIN_QUANTITY = 1
+MIN_QUANTITY = 4
 
 
-LOCAL_MODEL_K = 4
+LOCAL_MODEL_K = 8
 
 if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys._MEIPASS)
@@ -100,6 +100,7 @@ def normalize_imported_results(raw_results):
 
 @app.route("/")
 def home():
+    session["Logged"] = True
     return render_template("loading.html")
 
 @app.route("/login", methods=["GET", "POST"])

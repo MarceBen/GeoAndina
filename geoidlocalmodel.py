@@ -1,8 +1,17 @@
-from egm2008 import EGModel2008
-from scipy.spatial import KDTree
+import math
 from itertools import product
-from utm import utm_to_geodetic
-from interpolation import bilinear_interpolation
+
+import numpy as np
+from scipy.spatial import KDTree, Delaunay
+
+from egm2008 import EGModel2008
+
+MIN_CONTROL_POINTS = 4      # mínimo para formar una grilla
+MAX_NEIGHBORS = 32          # tope de vecinos al ampliar la búsqueda
+EXACT_POINT_TOLERANCE = 0.001   # m: el punto coincide con un punto de control
+UV_TOLERANCE = 1e-9         # tolerancia numérica para puntos en el borde de la celda
+
+
 class LocalModel(EGModel2008):
     def __init__(self, points):
 
@@ -10,11 +19,15 @@ class LocalModel(EGModel2008):
 
         self.points = points
         self.kdtree = None
+        self.triangulation = None
 
     def buildkd_tree(self):
 
         if not self.points:
             raise ValueError("No se encontraron puntos")
+
+        if len(self.points) < MIN_CONTROL_POINTS:
+            raise ValueError(f"El modelo local necesita al menos {MIN_CONTROL_POINTS} puntos de control.")
 
         points = []
 
@@ -23,13 +36,18 @@ class LocalModel(EGModel2008):
 
         self.kdtree = KDTree(points)
 
+        
+        try:
+            self.triangulation = Delaunay(np.array(points, dtype=float))
+        except Exception:
+            self.triangulation = None
+
     def find_nearest_points(self, east, north, k):
 
-        if k < 4:
+        if k < MIN_CONTROL_POINTS:
             raise ValueError("El numero de puntos debe ser mayor o igual a 4")
 
-        if k > len(self.points):
-            raise ValueError("El numero de puntos no puede ser mayor al total de puntos disponibles")
+        k = min(k, len(self.points))
 
         distance, indexes = self.kdtree.query((east, north), k=k)
 
@@ -77,25 +95,27 @@ class LocalModel(EGModel2008):
         north_east = []
         south_east = []
 
+        
         for point in nearest_points:
 
             point_east = point["East"]
             point_north = point["North"]
 
-            if point_east < east and point_north > north:
+            is_west = point_east <= east
+            is_east = point_east >= east
+            is_south = point_north <= north
+            is_north = point_north >= north
 
+            if is_west and is_north:
                 north_west.append(point)
 
-            elif point_east > east and point_north > north:
-
+            if is_east and is_north:
                 north_east.append(point)
 
-            elif point_east < east and point_north < north:
-
+            if is_west and is_south:
                 south_west.append(point)
 
-            elif point_east > east and point_north < north:
-
+            if is_east and is_south:
                 south_east.append(point)
 
         for north_west_point, south_west_point, north_east_point, south_east_point in product(north_west, south_west, north_east, south_east):
@@ -107,6 +127,25 @@ class LocalModel(EGModel2008):
                     return north_west_point, south_west_point, north_east_point, south_east_point
 
         return None
+
+    def find_grid_adaptive(self, east, north, k):
+
+        # Empieza con k vecinos y los duplica hasta encontrar una celda que rodee al punto.
+        total = len(self.points)
+        limit = min(MAX_NEIGHBORS, total)
+        current = min(max(k, MIN_CONTROL_POINTS), limit)
+
+        while True:
+
+            grid = self.find_grid(east, north, current)
+
+            if grid is not None:
+                return grid
+
+            if current >= limit:
+                return None
+
+            current = min(current * 2, limit)
 
     def is_point_inside_grid(self, east, north, nw, ne, sw, se):
 
@@ -126,24 +165,16 @@ class LocalModel(EGModel2008):
 
         vector_ab_x = point_b["East"] - point_a["East"]
         vector_ab_y = point_b["North"] - point_a["North"]
-        
+
         vector_ac_x = point_c["East"] - point_a["East"]
         vector_ac_y = point_c["North"] - point_a["North"]
-        
+
         return vector_ab_x * vector_ac_y - vector_ab_y * vector_ac_x
 
+    def calculate_point_geoid(self, point):
 
-    def calculate_point_geoid(self, point, utm_zone):
-
-        latitude, longitude = utm_to_geodetic(point["East"],point["North"],utm_zone)
-
-        i, j, i_trunc, j_trunc = self.calculate_indices(latitude, longitude)
-
-        NA, NB, NC, ND = self.get_vertices(i_trunc, j_trunc)
-
-        t, u = self.calculate_tu(latitude, longitude, NA, NB, ND)
-
-        N = bilinear_interpolation(NA, NB, NC, ND, t, u)
+        # Ondulación geoidal del punto de control: N = h - H, con los datos del propio archivo.
+        N = point["EllipsoidalHeight"] - point["OrthometricHeight"]
 
         point["Geoid_Height"] = N
 
@@ -164,10 +195,10 @@ class LocalModel(EGModel2008):
             error_y = north - y
 
             if abs(error_x) < 0.000001 and abs(error_y) < 0.000001:
-                 
-                if 0 <= u <= 1 and 0 <= v <= 1:
 
-                    return u, v
+                if -UV_TOLERANCE <= u <= 1 + UV_TOLERANCE and -UV_TOLERANCE <= v <= 1 + UV_TOLERANCE:
+
+                    return min(max(u, 0.0), 1.0), min(max(v, 0.0), 1.0)
 
                 raise ValueError("El punto se encuentra fuera de la grilla")
 
@@ -183,7 +214,7 @@ class LocalModel(EGModel2008):
 
             if determinant == 0:
                 raise ValueError("No se puede calcular la posición dentro de la grilla.")
- 
+
             delta_u = ((error_x * dy_dv - error_y * dx_dv) / determinant)
 
             delta_v = ((dx_du * error_y - dy_du * error_x) / determinant)
@@ -193,25 +224,64 @@ class LocalModel(EGModel2008):
 
         raise ValueError("No se pudo calcular la posición dentro de la grilla.")
 
-    def interpolate_local_geoid(self, u, v, nw, ne, sw, se):    
+    def interpolate_local_geoid(self, u, v, nw, ne, sw, se):
 
         N = (sw["Geoid_Height"] * (1-u) * (1-v) + se["Geoid_Height"] * u * (1-v) + nw["Geoid_Height"] * (1-u) * v+ ne["Geoid_Height"] * u * v)
 
         return N
 
+    def calculate_points_geoid(self, utm_zone=None):
 
-    def calculate_points_geoid(self, utm_zone):
-
+        # utm_zone se conserva por compatibilidad con app.py; ya no se necesita.
         for point in self.points:
 
-            self.calculate_point_geoid(point, utm_zone)
+            self.calculate_point_geoid(point)
+
+    def interpolate_triangle(self, east, north):
+
+        if self.triangulation is None:
+            return None
+
+        simplex = int(self.triangulation.find_simplex((east, north)))
+
+        if simplex < 0:
+            return None
+
+        transform = self.triangulation.transform[simplex]
+
+        b = transform[:2].dot(np.array([east, north]) - transform[2])
+
+        weights = (b[0], b[1], 1.0 - b[0] - b[1])
+
+        vertices = self.triangulation.simplices[simplex]
+
+        return float(sum(weight * self.points[int(vertex)]["Geoid_Height"] for weight, vertex in zip(weights, vertices)))
 
     def calculate_local_geoid(self, east, north, k):
 
-        grid = self.find_grid(east, north, k)
+        if self.kdtree is None:
+            raise ValueError("El modelo local no está construido.")
+
+        # Si el punto coincide con un punto de control, se devuelve su ondulación directamente.
+        distance, index = self.kdtree.query((east, north), k=1)
+
+        if distance <= EXACT_POINT_TOLERANCE:
+            return self.points[index]["Geoid_Height"]
+
+        grid = self.find_grid_adaptive(east, north, k)
 
         if grid is None:
-            raise ValueError("No se encontró una grilla válida.")
+
+            N = self.interpolate_triangle(east, north)
+
+            if N is not None:
+                return N
+
+            raise ValueError(
+                "El punto no está rodeado por puntos de control. "
+                "Verifique que se encuentre dentro del área cubierta por el modelo local "
+                "(se necesitan puntos de control a ambos lados, no alineados)."
+            )
 
         nw, sw, ne, se = grid
 

@@ -26,6 +26,10 @@
 
                 <div class="card-body">
 
+                    <div class="card-logo">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GeoAndina">
+                    </div>
+
                     <div class="d-flex justify-content-end mb-2">
                         <span class="badge {{ 'bg-primary' if session.get('HeightModel') == 'EGM2008' else 'bg-success' }}">
                             MODELO: {{ 'EGM2008' if session.get('HeightModel') == 'EGM2008' else 'LOCAL' }}
@@ -105,8 +109,7 @@
 
     <div class = "text-center">
 
-        <h2 class = "my-2">Ingresos de datos</h2>
-        <p class = "my-2">Complete la informacion correspondiete por cada punto.</p>
+        <h2 class = "my-2">Puntos a calcular altimetricamente.</h2>
 
     </div>
 
@@ -398,9 +401,9 @@
 
             <select class="form-select" id="importCalculationType" name="CalculationType" required>
 
-                <option value="OrthometricHeight">Altura Ortométrica</option>
+                <option value="EllipsoidalHeight">Altura Ortométrica</option>
 
-                <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+                <option value="OrthometricHeight">Altura Elipsoidal</option>
 
             </select>
 

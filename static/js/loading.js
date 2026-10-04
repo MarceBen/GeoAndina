@@ -68,7 +68,7 @@ fetch("/initialize")
    
     setTimeout(() => {
 
-        window.location.href = "/login";
+        window.location.href = "/premain_menu";
 
     }, 500);
 

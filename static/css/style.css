@@ -2,7 +2,7 @@
 
 :root
 {
-    --bg: #bec0c2;
+    --bg: #3c8ee0;
     --surface: #FFFFFF;
     --border: #E2E8F0;
 
@@ -32,17 +32,12 @@
 body
 {
     font-family: 'IBM Plex Sans', 'Inter', sans-serif;
-
     color: var(--text);
-
     background-color: var(--bg);
-
     background-image:
         linear-gradient(rgba(37, 99, 235, .025) 1px, transparent 1px),
         linear-gradient(90deg, rgba(37, 99, 235, .025) 1px, transparent 1px);
-
     background-size: 32px 32px;
-
     min-height: 100vh;
 }
 
@@ -665,16 +660,13 @@ h3
 
 .loading-screen
 {
-    position: relative;
-
+   position: relative;
+    width: 100%;
     min-height: 100vh;
-
     overflow: hidden;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     background: var(--bg);
@@ -689,23 +681,25 @@ h3
     left: 0;
 
     background-image:
-        linear-gradient(rgba(37, 99, 235, .035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(37, 99, 235, .035) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, .16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .16) 1px, transparent 1px);
 
     background-size: 36px 36px;
+    z-index: 0;
 }
 
 .contour,
 .geo-point,
 .loading-scan
 {
-    display: none;
+    display: block;
 }
 
 .loading-container {
     position: relative;
     z-index: 10;
     width: min(680px, 90vw);
+    margin: 0 auto;
 }
 
 .loading-panel {
@@ -775,27 +769,6 @@ h3
     padding: 40px 0 30px;
 }
 
-.brand-mark {
-    width: 56px;
-    height: 56px;
-
-    margin: 0 auto 16px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: var(--primary);
-    border-radius: 50%;
-
-    color: #FFFFFF;
-
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 1.0rem;
-    font-weight: 700;
-
-    box-shadow: 0 0 0 6px var(--primary-soft);
-}
 
 .loading-brand h1 {
     margin: 0;
@@ -1052,4 +1025,163 @@ h3
     letter-spacing: 2px;
     color: var(--primary);
     font-weight: 600;
+}
+
+.card-logo
+{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.card-logo img
+{
+    height: 44px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.brand-mark {
+    width: 220px;
+    height: 80px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-mark img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.contour {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: contour-float 8s ease-in-out infinite;
+    z-index: 1;
+}
+
+.contour-1 {
+    width: 420px;
+    height: 220px;
+    top: 8%;
+    left: -80px;
+}
+
+.contour-2 {
+    width: 520px;
+    height: 280px;
+    bottom: 5%;
+    right: -120px;
+    animation-delay: -2s;
+}
+
+.contour-3 {
+    width: 300px;
+    height: 180px;
+    top: 45%;
+    right: 5%;
+    animation-delay: -4s;
+}
+
+.contour-4 {
+    width: 380px;
+    height: 200px;
+    bottom: 20%;
+    left: 8%;
+    animation-delay: -6s;
+}
+
+@keyframes contour-float {
+    0%, 100% {
+        transform: scale(1) translate(0, 0);
+        opacity: .15;
+    }
+
+    50% {
+        transform: scale(1.08) translate(10px, -8px);
+        opacity: .35;
+    }
+}
+
+.geo-point {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+
+    background: #FFFFFF;
+    box-shadow:
+        0 0 0 5px rgba(255,255,255,.10),
+        0 0 12px rgba(255,255,255,.75);
+
+    animation: point-pulse 2s ease-in-out infinite;
+    z-index: 2;
+}
+
+.point-1 {
+    top: 20%;
+    left: 12%;
+}
+
+.point-2 {
+    top: 70%;
+    right: 15%;
+    animation-delay: -0.7s;
+}
+
+.point-3 {
+    bottom: 18%;
+    left: 28%;
+    animation-delay: -1.4s;
+}
+
+@keyframes point-pulse {
+    0%, 100% {
+        transform: scale(.7);
+        opacity: .4;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+}
+
+.loading-scan {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+
+    background: rgba(255,255,255,.22);
+    box-shadow: 0 0 12px rgba(255,255,255,.45);
+
+    animation: scan 4s linear infinite;
+    z-index: 2;
+}
+
+@keyframes scan {
+    from {
+        top: 0;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: .5;
+    }
+
+    80% {
+        opacity: .5;
+    }
+
+    to {
+        top: 100%;
+        opacity: 0;
+    }
 }

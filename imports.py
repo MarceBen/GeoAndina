@@ -1,23 +1,52 @@
 import csv
+import math
 from calculations import dm_to_decimal, dms_to_decimal, calculate_ellipsoidal_height, calculate_orthometric_height
 from utm import geodetic_to_utm
 from utm import utm_to_geodetic
 
 ALLOWED_EXTENSIONS = {"csv", "txt"}
 
+# Rangos UTM hemisferio sur para Perú (zonas 17S, 18S y 19S)
+UTM_MIN_EAST = 100000
+UTM_MAX_EAST = 900000
+UTM_MIN_NORTH = 7900000
+UTM_MAX_NORTH = 10000000
+
+# Ondulación geoidal máxima creíble (|h - H|, en metros) para detectar errores de digitación
+MAX_ABS_UNDULATION = 100
+
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def detect_delimiter(lines):
+
+    # Elige el separador según la primera línea con datos (tab > ; > ,).
+    # Así funcionan archivos de Excel en español (separador ; y coma decimal).
+    sample = lines[0]
+
+    best = ","
+    best_count = sample.count(",")
+
+    for candidate in (";", "\t"):
+
+        if sample.count(candidate) >= best_count and sample.count(candidate) > 0:
+            best = candidate
+            best_count = sample.count(candidate)
+
+    return best
+
+
+def is_number(text):
+
+    try:
+        float(text)
+        return True
+
+    except ValueError:
+        return False
+
+
 def read_rows(file):
-
-    filename = file.filename
-    extension = filename.rsplit(".", 1)[1].lower()
-
-    if extension == "txt":
-        delimiter = "\t"
-
-    else:
-        delimiter = ","
 
     raw_bytes = file.read()
 
@@ -29,13 +58,30 @@ def read_rows(file):
     except UnicodeDecodeError:
         raw_text = raw_bytes.decode("latin-1")
 
-    reader = csv.reader(raw_text.splitlines(), delimiter=delimiter)
+    lines = [line for line in raw_text.splitlines() if line.strip()]
+
+    if not lines:
+        raise ValueError("El archivo esta vacio o no tiene un formato valido")
+
+    delimiter = detect_delimiter(lines)
+
+    reader = csv.reader(lines, delimiter=delimiter)
 
     rows = []
 
     for row in reader:
 
+        row = [cell.strip() for cell in row]
+
+        # Con ; o tab, la coma es el separador decimal (275000,5 -> 275000.5)
+        if delimiter != ",":
+            row = [row[0]] + [cell.replace(",", ".") for cell in row[1:]]
+
         rows.append(row)
+
+    # Si la primera fila es un encabezado (la segunda columna no es numérica), se omite
+    if len(rows[0]) > 1 and not is_number(rows[0][1]):
+        rows = rows[1:]
 
     if not rows:
         raise ValueError("El archivo esta vacio o no tiene un formato valido")
@@ -113,6 +159,9 @@ def parse_utm_row(row):
 
     except ValueError:
         raise ValueError(f"Error en el punto {number}")
+
+    if not all(math.isfinite(value) for value in (east, north, height)):
+        raise ValueError(f"Error en el punto {number}: valor no válido")
 
     return number, east, north, height
 
@@ -199,7 +248,7 @@ def parse_utm_file(file, model, utm_zone, calculation_type):
 
 def parse_local_point_row(row):
 
-    number = row[0]
+    number = row[0] if row else ""
 
     if len(row) != 5:
         raise ValueError("El formato debe ser Punto, Este, Norte, Altura elipsoidal, Altura ortométrica")
@@ -213,6 +262,23 @@ def parse_local_point_row(row):
 
     except ValueError:
         raise ValueError(f"Error en el punto {number}")
+
+    if not all(math.isfinite(value) for value in (east, north, ellipsoidal_height, orthometric_height)):
+        raise ValueError(f"Error en el punto {number}: valor no válido (NaN o infinito)")
+
+    if not (UTM_MIN_EAST <= east <= UTM_MAX_EAST) or not (UTM_MIN_NORTH <= north <= UTM_MAX_NORTH):
+        raise ValueError(
+            f"El punto {number} tiene coordenadas UTM fuera del rango de Perú "
+            f"(Este {east}, Norte {north}). Verifique que no sean coordenadas geodésicas."
+        )
+
+    undulation = ellipsoidal_height - orthometric_height
+
+    if abs(undulation) > MAX_ABS_UNDULATION:
+        raise ValueError(
+            f"El punto {number} tiene una ondulación h - H = {undulation:.2f} m, que no es creíble. "
+            "Verifique el orden de las columnas: Punto, Este, Norte, Altura elipsoidal, Altura ortométrica."
+        )
 
     return number, east, north, ellipsoidal_height, orthometric_height
 
@@ -236,10 +302,21 @@ def parse_local_points_file(file, min_points, max_points):
         raise ValueError(f"La cantidad de puntos debe estar entre {min_points} y {max_points}")
 
     points = []
+    seen_numbers = set()
+    seen_coordinates = set()
 
     for row in rows:
 
         number, east, north, ellipsoidal_height, orthometric_height = parse_local_point_row(row)
+
+        if number in seen_numbers:
+            raise ValueError(f"El número de punto {number} está repetido.")
+
+        if (east, north) in seen_coordinates:
+            raise ValueError(f"El punto {number} repite las coordenadas de otro punto de control.")
+
+        seen_numbers.add(number)
+        seen_coordinates.add((east, north))
 
         points.append({
 

@@ -51,6 +51,7 @@ def _get_system_volume_serial_windows() -> str:
 def get_raw_machine_identifier() -> str:
   
     if sys.platform != "win32":
+        
         raise MachineIdError(
             "get_raw_machine_identifier() solo funciona en Windows. "
             "Este módulo está pensado para ejecutarse dentro de GeoAndina.exe "

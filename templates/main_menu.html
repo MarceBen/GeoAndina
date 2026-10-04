@@ -24,6 +24,10 @@
 
                     <div class="card-body">
 
+                        <div class="card-logo">
+                            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GeoAndina">
+                        </div>
+
                         <div class="d-flex justify-content-end mb-2">
                             <span class="badge {{ 'bg-primary' if session.get('HeightModel') == 'EGM2008' else 'bg-success' }}">
                                 MODELO: {{ 'EGM2008' if session.get('HeightModel') == 'EGM2008' else 'LOCAL' }}

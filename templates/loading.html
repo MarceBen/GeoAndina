@@ -49,7 +49,7 @@
             <div class="loading-brand">
 
                 <div class="brand-mark">
-                    GA
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="INGNOVANDO">
                 </div>
 
                 <h1>
@@ -62,6 +62,10 @@
                     MODELO GEOIDAL EGM2008
                 </p>
 
+                <p class="brand-subtitle my-2">
+                    Dr. Ing. Jorge Luis Mendoza Dueñas
+                </p>
+
                 <p class="brand-country">
                     PERÚ
                 </p>
@@ -72,7 +76,7 @@
             <div class="loading-data">
 
                 <div class="data-line">
-                    <span>DATUM</span>
+                    <span>DATA</span>
                     <strong>EGM2008</strong>
                 </div>
 
@@ -82,8 +86,7 @@
                 </div>
 
                 <div class="data-line">
-                    <span>MOTOR</span>
-                    <strong>INTERPOLACIÓN GEOIDAL</strong>
+                    <strong>TRANSFORMACION DE ALTURA ELIPSOIDAL, ORTOMETRICA Y VICEVERSA</strong>
                 </div>
 
             </div>
@@ -95,10 +98,6 @@
 
                     <span id="loading-message">
                         Inicializando aplicación...
-                    </span>
-
-                    <span id="loading-percentage">
-                        0%
                     </span>
 
                 </div>
@@ -120,7 +119,7 @@
                     GeoAndina v1.1
                 </div>
 
-                <div>
+                <div class="brand-subtitle">
                     © 2026 Marcelo Benites
                 </div>
 

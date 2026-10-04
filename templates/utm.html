@@ -26,6 +26,10 @@
 
                 <div class="card-body">
 
+                    <div class="card-logo">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GeoAndina">
+                    </div>
+
                     <div class = "nav-buttons">
 
                         <button type="button" class="secondary-btn import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
@@ -103,8 +107,8 @@
 
     <div class = "text-center">
 
-        <h2 class = "my-2">Ingresos de datos</h2>
-        <p class = "my-2">Complete la informacion correspondiete por cada punto.</p>
+        
+        <h2 class = "my-2">Puntos a calcular altimetricamente..</h2>
 
     </div>
 
@@ -112,80 +116,70 @@
 
             <input type="hidden" name="quantity" value="{{ quantity }}">
 
+            <div class="table-responsive">
+
+            <table class="table table-bordered align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Punto</th>
+                        <th>Este (m)</th>
+                        <th>Norte (m)</th>
+                        <th>Tipo de cálculo</th>
+                        <th>Altura</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
             {% for i in range(quantity) %}
 
-                <div class = "card my-3">
+                <tr class = "coordinate-card">
 
-                    <div class = "card-body coordinate-card">
+                    <td class="row-number"><strong>{{ i + 1 }}</strong></td>
 
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <p class="mb-0"><strong>Punto {{ i + 1 }}</strong></p>
+                    <td>
+                        <input type = "number" class = "form-control" id = "East_{{ i }}" name = "East_{{ i }}" step = "any">
+                    </td>
+
+                    <td>
+                        <input type = "number" class = "form-control" id = "North_{{ i }}" name = "North_{{ i }}" step = "any">
+                    </td>
+
+                    <td>
+
+                        <select class = "form-select calculation-type" name = "CalculationType_{{ i }}" id="CalculationType_{{ i }}">
+
+                            <option value="OrthometricHeight">Altura ortométrica</option>
+                            <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <div class = "ellipsoidal-fields">
+                            <label for = "EllipsoidalHeight_{{ i }}" class="form-label small mb-1">Altura elipsoidal</label>
+                            <input type = "number" class="form-control" id = "EllipsoidalHeight_{{ i }}" name = "EllipsoidalHeight_{{ i }}" step = "any">
                         </div>
 
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-
-                                <label for="East_{{ i }}">Este (m)</label>
-
-                                <input type = "number" class = "form-control" id = "East_{{ i }}" name = "East_{{ i }}" step = "any">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label for = "North_{{ i }}">Norte (m)</label>
-
-                                <input type = "number" class = "form-control" id = "North_{{ i }}" name = "North_{{ i }}" step = "any">
-
-                            </div>
-
+                        <div class = "orthometric-fields">
+                            <label for = "OrthometricHeight_{{ i }}" class="form-label small mb-1">Altura ortométrica</label>
+                            <input type = "number" class = "form-control" id = "OrthometricHeight_{{ i }}" name = "OrthometricHeight_{{ i }}" step = "any">
                         </div>
 
-                        <div class="row g-3 mt-1">
+                    </td>
 
-                            <div class="col-md-6">
-
-                                <label for="CalculationType_{{ i }}">Tipo de cálculo</label>
-
-                                <select class = "form-select calculation-type" name = "CalculationType_{{ i }}" id="CalculationType_{{ i }}">
-
-                                    <option value="OrthometricHeight">Altura ortométrica</option>
-                                    <option value="EllipsoidalHeight">Altura Elipsoidal</option>
-
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                        <div class="row g-3 mt-1">
-
-                            <div class = "col-md-6 ellipsoidal-fields">
-
-                                <label for = "EllipsoidalHeight_{{ i }}">Altura elipsoidal</label>
-
-                                <input type = "number" class="form-control" id = "EllipsoidalHeight_{{ i }}" name = "EllipsoidalHeight_{{ i }}" step = "any">
-
-
-                            </div>
-
-                            <div class = "col-md-6 orthometric-fields">
-
-                                <label for = "OrthometricHeight_{{ i }}">Altura ortométrica</label>
-
-                                <input type = "number" class = "form-control" id = "OrthometricHeight_{{ i }}" name = "OrthometricHeight_{{ i }}" step = "any">
-
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                </tr>
 
             {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            </div>
 
             <div class = "text-center">
 
@@ -314,9 +308,9 @@
 
             <select class="form-select" id="importCalculationType" name="CalculationType" required>
 
-                <option value="OrthometricHeight">Altura Ortométrica</option>
+                <option value="EllipsoidalHeight">Altura Ortométrica</option>
 
-                <option value="EllipsoidalHeight">Altura Elipsoidal</option>
+                <option value="OrthometricHeight">Altura Elipsoidal</option>
 
             </select>
 
