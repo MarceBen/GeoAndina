@@ -17,11 +17,15 @@ from machine_id import get_machine_id
 
 
 
-MAX_QUANTITY = 10000
-MIN_QUANTITY = 4
+MAX_QUANTITY = 200000
+MIN_QUANTITY = 1
+
+# Límites de puntos de control del modelo local (independientes del formulario manual)
+LOCAL_MIN_POINTS = 4
+LOCAL_MAX_POINTS = 200000
 
 
-LOCAL_MODEL_K = 8
+LOCAL_MODEL_K = 4
 
 if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys._MEIPASS)
@@ -626,7 +630,7 @@ def local_model_import():
         if utm_zone_value is None:
             raise ValueError("Debe seleccionar una zona UTM antes de importar los puntos")
 
-        points = parse_local_points_file(uploaded_file, MIN_QUANTITY, MAX_QUANTITY)
+        points = parse_local_points_file(uploaded_file, LOCAL_MIN_POINTS, LOCAL_MAX_POINTS)
 
         new_local_model = LocalModel(points)
         new_local_model.vertices = model.vertices
