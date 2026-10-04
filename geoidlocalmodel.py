@@ -12,6 +12,7 @@ EXACT_POINT_TOLERANCE = 0.001   # m: el punto coincide con un punto de control
 UV_TOLERANCE = 1e-9         # tolerancia numérica para puntos en el borde de la celda
 
 
+
 class LocalModel(EGModel2008):
     def __init__(self, points):
 
