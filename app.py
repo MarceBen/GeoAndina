@@ -370,7 +370,7 @@ def geodetic_import():
 
             results = normalize_imported_results(raw_results)
 
-        return render_template("geodetic.html", quantity=len(results), results=results)
+        return render_template("geodetic.html", results=results)
 
     except ValueError as e:
         return render_template("geodetic.html", quantity=None, results=None, error=str(e))
@@ -585,7 +585,7 @@ def utm_import():
 
             results = normalize_imported_results(raw_results)
 
-        return render_template("utm.html", quantity=len(results), results=results)
+        return render_template("utm.html", results=results)
 
     except ValueError as e:
         return render_template("utm.html", quantity=None, results=None, error=str(e))

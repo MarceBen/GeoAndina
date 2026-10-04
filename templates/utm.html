@@ -11,6 +11,7 @@
 
     <title>GeoAndina v1.1</title>
 
+
 </head>
 
 <body>
@@ -194,73 +195,61 @@
 
         </form>
 
-            {% if results %}
+    {% endif %}
+
+    {% if results %}
 
 <div class="mt-5">
 
-    <h2 class="text-center mb-4">Resultados</h2>
+    <div class="results-heading mb-4">
+        <h2 class="mb-0">Resultados</h2>
+        <span class="badge bg-primary-subtle text-primary-emphasis results-count-badge">{{ results|length }} punto{{ 's' if results|length != 1 else '' }}</span>
+    </div>
 
-    {% for result in results %}
+    <div class="table-responsive result-table-wrapper">
 
-    <div class="card shadow-sm mb-4 result-card">
+    <table class="table result-table mb-0">
 
-        <div class="card-header">
+        <thead>
+            <tr>
+                <th class="text-center">Punto</th>
+                <th class="text-end">Latitud</th>
+                <th class="text-end">Longitud</th>
+                <th class="text-center">Tipo de cálculo</th>
+                <th class="text-end">Altura ortométrica (m)</th>
+                <th class="text-end">Altura elipsoidal (m)</th>
+            </tr>
+        </thead>
 
-            <strong>{% if result.PointNumber %}Punto {{ result.PointNumber }}{% else %}Punto {{ loop.index }}{% endif %}</strong>
+        <tbody>
 
-        </div>
+        {% for result in results %}
 
-        <div class="card-body">
+            <tr>
 
-            <p>
-                <strong>Latitud:</strong>
-                <span class="data-value">{{ "%.6f"|format(result["latitude"]) }}°</span>
-            </p>
+                <td class="row-number text-center"><strong>{% if result.PointNumber %}{{ result.PointNumber }}{% else %}{{ loop.index }}{% endif %}</strong></td>
 
-            <p>
-                <strong>Longitud:</strong>
-                <span class="data-value">{{ "%.6f"|format(result["longitude"]) }}°</span>
-            </p>
+                <td class="data-value text-end">{{ "%.6f"|format(result["latitude"]) }}°</td>
 
-            {% if result["CalculationType"] == "OrthometricHeight" %}
+                <td class="data-value text-end">{{ "%.6f"|format(result["longitude"]) }}°</td>
 
-                <p>
-                    <strong>Tipo de cálculo:</strong>
-                    Altura Ortométrica
-                </p>
+                <td class="text-center">{{ "Altura Ortométrica" if result["CalculationType"] == "OrthometricHeight" else "Altura Elipsoidal" }}</td>
 
-                <h3 class="fw-bold text-primary data-value">
+                <td class="data-value text-end {% if result['CalculationType'] == 'OrthometricHeight' %}fw-bold text-primary{% endif %}">{{ "%.3f"|format(result["orthometric_height"]) }}</td>
 
-                    {{ "%.3f"|format(result["orthometric_height"]) }} m
+                <td class="data-value text-end {% if result['CalculationType'] == 'EllipsoidalHeight' %}fw-bold text-success{% endif %}">{{ "%.3f"|format(result["ellipsoidal_height"]) }}</td>
 
-                </h3>
+            </tr>
 
-            {% else %}
+        {% endfor %}
 
-                <p>
-                    <strong>Tipo de cálculo:</strong>
-                    Altura Elipsoidal
-                </p>
+        </tbody>
 
-                <h3 class="fw-bold text-success data-value">
-
-                    {{ "%.3f"|format(result["ellipsoidal_height"]) }} m
-
-                </h3>
-
-            {% endif %}
-
-
-
-        </div>
+    </table>
 
     </div>
 
-    {% endfor %}
-
 </div>
-
-{% endif %}
 
     {% endif %}
 
